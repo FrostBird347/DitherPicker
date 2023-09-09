@@ -14,10 +14,13 @@ extension PreferencePane.Identifier {
 }
 
 struct Settings {
+	//Placeholder setting values
+	//specify echo as gimp-console path so nothing goes too horribly wrong in the event that these values somehow remain
 	static var Picker: Int = 0;
 	static var Dither: Int = 0;
 	static var Path: String = "/bin/echo";
 	
+	//Contains the actual default values
 	static func LoadSettings() {
 		if (UserDefaults.standard.object(forKey: "Picker") == nil) {
 			UserDefaults.standard.set(0, forKey: "Picker");
@@ -51,15 +54,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
 		// Insert code here to initialize your application
-		
-		//Eh, no harm in running it here as well
-		Settings.LoadSettings();
 	}
 
 	func applicationWillTerminate(_ aNotification: Notification) {
 		// Insert code here to tear down your application
 	}
 	
+	//Terminate the app after the last window is closed
+	//Main window can't be re-opened when it's closed, so this will make it clearer to the user
 	func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
 		return true;
 	}

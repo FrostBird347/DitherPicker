@@ -28,7 +28,9 @@ class ViewController: NSViewController {
 	var ChosenPalette: String = "Default";
 	var PickerImageList: [NSImage] = [];
 	
-	
+	//When the app starts:
+	// - Load settings
+	// - Load the correct colour picker
 	override func viewDidLoad() {
 		super.viewDidLoad();
 		
@@ -46,14 +48,10 @@ class ViewController: NSViewController {
 				PickerImage = NSImage(named: NSImage.cautionName)!;
 		}
 		
-		
-		// Do any additional setup after loading the view.
-		NSLog("viewDidLoad");
 		LoadPicker(FullPicker: PickerImage);
 		
 		let NormalPickerCG = PickerImage.cgImage(forProposedRect: nil, context: nil, hints: nil);
 		NormalPickerBitmap = NSBitmapImageRep(cgImage: NormalPickerCG!);
-		
 	}
 
 	override var representedObject: Any? {
@@ -63,7 +61,7 @@ class ViewController: NSViewController {
 	}
 
 	@IBAction func CopyHex(_ sender: NSButton) {
-		NSLog("CopyHex");
+		//Colour preview should already be accurate, but just incase we should update it
 		UpdateColourPreview();
 		
 		//https://stackoverflow.com/a/32345031
@@ -72,6 +70,8 @@ class ViewController: NSViewController {
 		let HexB: Int = Int(round(PickerColour.color.blueComponent * 0xFF));
 		let HexString: String = String(NSString(format: "#%02X%02X%02X", HexR, HexG, HexB));
 		
+		//Clipboard must be cleared before we can copy
+		NSPasteboard.general.clearContents();
 		NSPasteboard.general.setString(HexString, forType: NSPasteboard.PasteboardType.string);
 	}
 	
@@ -87,7 +87,7 @@ class ViewController: NSViewController {
 	
 	@IBAction func ProcessPalette(_ sender: NSTextField) {
 		if (sender.stringValue != ChosenPalette) {
-			NSLog("ProcessPalette");
+			NSLog("New palette specified!");
 			
 			ChosenPalette = sender.stringValue;
 			UpdatePicker();
@@ -95,12 +95,12 @@ class ViewController: NSViewController {
 	}
 	
 	@IBAction func UpdatePointer(_ sender: NSPressGestureRecognizer) {
-		
 		//When the pointer is first clicked, enable the copy button
 		if (PointerElement.frame.origin.x < 0) {
 			CopyButton.isEnabled = true;
 		}
 		
+		//Get the click location, making sure to clamp it at the image bounds
 		let RawLocation:NSPoint = sender.location(in: MainView);
 		PointerElement.frame.origin.x = min(max(RawLocation.x, 5), 754) - 15;
 		PointerElement.frame.origin.y = min(max(RawLocation.y, 5), 754) - 15;
@@ -108,6 +108,7 @@ class ViewController: NSViewController {
 		let LastPickerX: Int = PickerX;
 		let LastPickerY: Int = PickerY;
 		
+		//Offset click position to place the circle in the middle
 		PickerX = Int(round(PointerElement.frame.origin.x + 10));
 		PickerY = Int(round(749 - (PointerElement.frame.origin.y + 10)));
 		
@@ -117,15 +118,18 @@ class ViewController: NSViewController {
 		}
 	}
 	
+	//Calculate currently selected colour
 	func UpdateColourPreview() {
+		//Figure out where the current tile is
 		let XShift: Int = (PickerIndex % 16) * 750;
 		let YShift: Int  = Int(floor(Float(PickerIndex) / 16)) * 750;
 		
 		PickerColour.color = (NormalPickerBitmap?.colorAt(x: PickerX + XShift, y: PickerY + YShift))!;
 	}
 	
+	//Very slow function that uses GIMP to apply a colour palette to the picker texture
 	func UpdatePicker() {
-		NSLog("UpdatePicker");
+		NSLog("Saving normal picker texture to temporary location...");
 		
 		let PickerRaw: Data = (NormalPickerBitmap!.tiffRepresentation)!;
 		
@@ -137,9 +141,12 @@ class ViewController: NSViewController {
 			try PickerRaw.write(to: fullURL);
 		} catch {}
 		
+		//The texture is 12000x12000 and gimp is slow to load and save files
+		//I won't use alternatives such as imagemagick because dither is applied differently
+		NSLog("Applying new palette to the texture... (this will take a while)");
+		
 		let task: Process = Process();
 		let pipe: Pipe = Pipe();
-		
 		
 		task.standardOutput = pipe;
 		task.standardError = pipe;
@@ -153,14 +160,14 @@ class ViewController: NSViewController {
 		task.arguments?.append("-b");
 		task.arguments?.append("(gimp-quit 1)");
 		
-		NSLog(task.arguments!.joined(separator: " "));
-		
+		NSLog("GIMP arguments: [\n\t'" + task.arguments!.joined(separator: "',\n\t'") + "'\n]");
 		task.launch()
 		
 		let data = pipe.fileHandleForReading.readDataToEndOfFile();
 		let output = String(data: data, encoding: .utf8)!
 		
-		NSLog(output);
+		NSLog("Applied palette, output below:\n" + output);
+		NSLog("Loading new texture...");
 		
 		var ConvertedPicker: Data? = nil;
 		do {
@@ -168,14 +175,17 @@ class ViewController: NSViewController {
 		} catch {}
 		LoadPicker(FullPicker: NSImage(data: ConvertedPicker!)!);
 		
-		
+		NSLog("Removing temporary file...");
 		do {
 			let fileManager = FileManager.init();
 			try fileManager.removeItem(at: fullURL);
 		} catch {}
+		
+		NSLog("Done!");
 	}
 	
 	func LoadPicker(FullPicker: NSImage) {
+		NSLog("Updating picker texture...");
 		PickerImageList.removeAll();
 		
 		let PickerCG = FullPicker.cgImage(forProposedRect: nil, context: nil, hints: nil);
@@ -199,8 +209,7 @@ class ViewController: NSViewController {
 			i += 1;
 		}
 		
-		DisplayedPicker.image = PickerImageList[Int(BrightnessSlider.intValue)];
-		DisplayedPicker.image = PickerImageList[Int(BrightnessSlider.intValue)];
+		DisplayedPicker.image = PickerImageList[PickerIndex];
 	}
 	
 }
