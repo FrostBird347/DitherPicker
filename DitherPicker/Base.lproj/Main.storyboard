@@ -255,10 +255,11 @@
                             </textField>
                             <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="cKg-yH-6Tt" userLabel="Button_CopyHex">
                                 <rect key="frame" x="752" y="754" width="33" height="32"/>
-                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSShareTemplate" imagePosition="only" alignment="center" enabled="NO" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="0pf-G8-ESp">
+                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSShareTemplate" imagePosition="only" alignment="center" enabled="NO" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0pf-G8-ESp">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="1"/>
                                 </buttonCell>
+                                <accessibility help="Copy hex value"/>
                                 <connections>
                                     <action selector="CopyHex:" target="XfG-lQ-9wD" id="HKP-mT-U4u"/>
                                 </connections>
@@ -314,6 +315,5 @@
         <image name="NSShareTemplate" width="11" height="16"/>
         <image name="NSStatusUnavailable" width="16" height="16"/>
         <image name="NSTouchBarColorPickerStroke" width="18" height="30"/>
-        <sound name="Pop"/>
     </resources>
 </document>

@@ -25,7 +25,7 @@ class ViewController: NSViewController {
 	var NormalPickerBitmap: NSBitmapImageRep? = nil;
 	var CurrentColour: NSColor = NSColor.clear;
 	var PickerIndex: Int = 0;
-	var ChosenPalette: String = "Default";
+	var ChosenPalette: String = "";
 	var PickerImageList: [NSImage] = [];
 	
 	//When the app starts:
@@ -73,6 +73,8 @@ class ViewController: NSViewController {
 		//Clipboard must be cleared before we can copy
 		NSPasteboard.general.clearContents();
 		NSPasteboard.general.setString(HexString, forType: NSPasteboard.PasteboardType.string);
+		
+		NSSound(named: NSSound.Name("Pop"))!.play();
 	}
 	
 	@IBAction func UpdateBrightness(_ sender: NSSliderCell) {
