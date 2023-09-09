@@ -53,7 +53,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	}
 
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
-		// Insert code here to initialize your application
+		//Print ascii art version of the logo
+		NSLog("\n  D  I  T  H  E  R  \n             ::.    \n            /:::/   \n           ':::,    \n       .−−−/ /      \n     .'   / /.      \n   .'    ; /  '.    \n   :     ·'    :    \n   :           :    \n    '.       .'     \n      '.___.'       \n                    \n  P  I  C  K  E  R  ");
 	}
 
 	func applicationWillTerminate(_ aNotification: Notification) {
