@@ -23,7 +23,11 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
-                                        <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW"/>
+                                        <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW">
+                                            <connections>
+                                                <action selector="preferencesMenuItemActionHandler:" target="Voe-Tx-rLC" id="f1S-gT-88z"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
                                         <menuItem title="Services" id="NMo-om-nkz">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -189,8 +193,9 @@
                     <window key="window" title="DitherPicker" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" tabbingMode="disallowed" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
                         <windowCollectionBehavior key="collectionBehavior" fullScreenNone="YES"/>
-                        <rect key="contentRect" x="0.0" y="757" width="786" height="787"/>
+                        <rect key="contentRect" x="0.0" y="0.0" width="786" height="787"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <value key="minSize" type="size" width="786" height="787"/>
                         <value key="maxSize" type="size" width="786" height="787"/>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="98r-iN-zZc"/>
@@ -221,10 +226,13 @@
                                         </connections>
                                     </pressGestureRecognizer>
                                 </gestureRecognizers>
-                                <imageCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Picker" id="B1k-xi-1e3"/>
+                                <imageCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="NSStatusUnavailable" id="B1k-xi-1e3"/>
                             </imageView>
                             <slider horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="VwT-AA-Ndj" userLabel="Input_Brightness">
                                 <rect key="frame" x="758" y="2" width="24" height="755"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="750" id="wgB-qq-KBI"/>
+                                </constraints>
                                 <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" state="on" alignment="left" maxValue="255" doubleValue="255" tickMarkPosition="left" numberOfTickMarks="255" allowsTickMarkValuesOnly="YES" sliderType="linear" id="kAc-8S-iFp">
                                     <connections>
                                         <action selector="UpdateBrightness:" target="XfG-lQ-9wD" id="raH-EJ-b9f"/>
@@ -247,7 +255,7 @@
                             </textField>
                             <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="cKg-yH-6Tt" userLabel="Button_CopyHex">
                                 <rect key="frame" x="752" y="754" width="33" height="32"/>
-                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSShareTemplate" imagePosition="only" alignment="center" enabled="NO" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0pf-G8-ESp">
+                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSShareTemplate" imagePosition="only" alignment="center" enabled="NO" refusesFirstResponder="YES" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="0pf-G8-ESp">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="1"/>
                                 </buttonCell>
@@ -274,19 +282,21 @@
                             <constraint firstItem="3TF-2a-GHZ" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="5" id="8v1-FN-pSX"/>
                             <constraint firstItem="cKg-yH-6Tt" firstAttribute="leading" secondItem="VwT-AA-Ndj" secondAttribute="leading" id="Ckz-5w-mCJ"/>
                             <constraint firstItem="VwT-AA-Ndj" firstAttribute="top" secondItem="cKg-yH-6Tt" secondAttribute="bottom" constant="6" id="Lll-VD-cF1"/>
-                            <constraint firstItem="3TF-2a-GHZ" firstAttribute="leading" secondItem="OiS-M4-Cfb" secondAttribute="leading" id="SpK-nk-1ik"/>
+                            <constraint firstAttribute="bottom" secondItem="OiS-M4-Cfb" secondAttribute="bottom" constant="5" id="Q6G-pD-lVX"/>
+                            <constraint firstItem="OiS-M4-Cfb" firstAttribute="top" secondItem="cJ7-jb-xkY" secondAttribute="bottom" constant="5" id="UML-fW-7Ji"/>
+                            <constraint firstAttribute="trailing" secondItem="OiS-M4-Cfb" secondAttribute="trailing" constant="31" id="WtA-sg-pfH"/>
                             <constraint firstItem="cJ7-jb-xkY" firstAttribute="leading" secondItem="3TF-2a-GHZ" secondAttribute="trailing" constant="5" id="Ysm-r8-8XL"/>
                             <constraint firstItem="3TF-2a-GHZ" firstAttribute="top" secondItem="cKg-yH-6Tt" secondAttribute="top" id="ZL4-B5-6Me"/>
                             <constraint firstItem="3TF-2a-GHZ" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="5" id="fpI-qd-qfE"/>
-                            <constraint firstItem="OiS-M4-Cfb" firstAttribute="top" secondItem="cJ7-jb-xkY" secondAttribute="bottom" constant="5" id="iC9-Pe-Zwf"/>
                             <constraint firstAttribute="trailing" secondItem="cKg-yH-6Tt" secondAttribute="trailing" constant="7" id="j7c-hX-t5R"/>
-                            <constraint firstItem="VwT-AA-Ndj" firstAttribute="bottom" secondItem="OiS-M4-Cfb" secondAttribute="bottom" id="lap-A1-bm0"/>
+                            <constraint firstItem="OiS-M4-Cfb" firstAttribute="top" secondItem="VwT-AA-Ndj" secondAttribute="top" id="myD-vl-uB4"/>
                             <constraint firstItem="cKg-yH-6Tt" firstAttribute="leading" secondItem="cJ7-jb-xkY" secondAttribute="trailing" constant="4" id="wDI-n2-mIZ"/>
-                            <constraint firstItem="OiS-M4-Cfb" firstAttribute="top" secondItem="3TF-2a-GHZ" secondAttribute="bottom" constant="6" id="yTS-Sn-0s5"/>
+                            <constraint firstItem="OiS-M4-Cfb" firstAttribute="leading" secondItem="3TF-2a-GHZ" secondAttribute="leading" id="yS5-gd-XEt"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="BrightnessSlider" destination="VwT-AA-Ndj" id="83l-lg-LXa"/>
+                        <outlet property="BrightnessSliderCell" destination="kAc-8S-iFp" id="J0x-iC-DjY"/>
                         <outlet property="CopyButton" destination="cKg-yH-6Tt" id="skl-1L-I45"/>
                         <outlet property="DisplayedPicker" destination="OiS-M4-Cfb" id="35Z-o0-UkT"/>
                         <outlet property="MainView" destination="m2S-Jp-Qdl" id="yPf-aU-kf0"/>
@@ -302,7 +312,8 @@
     </scenes>
     <resources>
         <image name="NSShareTemplate" width="11" height="16"/>
+        <image name="NSStatusUnavailable" width="16" height="16"/>
         <image name="NSTouchBarColorPickerStroke" width="18" height="30"/>
-        <image name="Picker" width="750" height="750"/>
+        <sound name="Pop"/>
     </resources>
 </document>

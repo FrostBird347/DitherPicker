@@ -20,13 +20,11 @@ class ViewController: NSViewController {
 	
 	var PickerX: Int = 0;
 	var PickerY: Int = 749;
-	var SinglePickerImage: NSImage = #imageLiteral(resourceName: "Picker");
-	var SinglePickerBitmap: NSBitmapImageRep? = nil;
-	var PickerImage: NSImage = #imageLiteral(resourceName: "PickerFull");
+	var PickerImage: NSImage = NSImage(named: NSImage.statusUnavailableName)!;
 	var PickerBitmap: NSBitmapImageRep? = nil;
 	var NormalPickerBitmap: NSBitmapImageRep? = nil;
 	var CurrentColour: NSColor = NSColor.clear;
-	var ColourMult: CGFloat = 1;
+	var PickerIndex: Int = 0;
 	var ChosenPalette: String = "Default";
 	var PickerImageList: [NSImage] = [];
 	
@@ -34,14 +32,24 @@ class ViewController: NSViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad();
 		
+		Settings.LoadSettings();
 		
-
+		switch Settings.Picker {
+			case 0:
+				PickerImage = #imageLiteral(resourceName: "PickerFull-HSI");
+			case 1:
+				PickerImage = #imageLiteral(resourceName: "PickerFull-HSY");
+				BrightnessSlider.floatValue = 0;
+			case 2:
+				PickerImage = #imageLiteral(resourceName: "PickerFull-HSL");
+			default:
+				PickerImage = NSImage(named: NSImage.cautionName)!;
+		}
+		
+		
 		// Do any additional setup after loading the view.
 		NSLog("viewDidLoad");
 		LoadPicker(FullPicker: PickerImage);
-		
-		let SinglePickerCG = SinglePickerImage.cgImage(forProposedRect: nil, context: nil, hints: nil);
-		SinglePickerBitmap = NSBitmapImageRep(cgImage: SinglePickerCG!);
 		
 		let NormalPickerCG = PickerImage.cgImage(forProposedRect: nil, context: nil, hints: nil);
 		NormalPickerBitmap = NSBitmapImageRep(cgImage: NormalPickerCG!);
@@ -57,15 +65,23 @@ class ViewController: NSViewController {
 	@IBAction func CopyHex(_ sender: NSButton) {
 		NSLog("CopyHex");
 		UpdateColourPreview();
+		
+		//https://stackoverflow.com/a/32345031
+		let HexR: Int = Int(round(PickerColour.color.redComponent * 0xFF));
+		let HexG: Int = Int(round(PickerColour.color.greenComponent * 0xFF));
+		let HexB: Int = Int(round(PickerColour.color.blueComponent * 0xFF));
+		let HexString: String = String(NSString(format: "#%02X%02X%02X", HexR, HexG, HexB));
+		
+		NSPasteboard.general.setString(HexString, forType: NSPasteboard.PasteboardType.string);
 	}
 	
 	@IBAction func UpdateBrightness(_ sender: NSSliderCell) {
-		let tempValue:CGFloat = CGFloat(sender.floatValue / 255);
+		let tempValue: Int = Int(sender.intValue);
 		
-		if (tempValue != ColourMult) {
-			ColourMult = tempValue;
+		if (tempValue != PickerIndex) {
+			PickerIndex = tempValue;
 			UpdateColourPreview();
-			DisplayedPicker.image = PickerImageList[Int(sender.intValue)];
+			DisplayedPicker.image = PickerImageList[PickerIndex];
 		}
 	}
 	
@@ -102,9 +118,10 @@ class ViewController: NSViewController {
 	}
 	
 	func UpdateColourPreview() {
-		CurrentColour = (SinglePickerBitmap?.colorAt(x: PickerX, y: PickerY))!;
-		CurrentColour = CurrentColour.blended(withFraction: 1 - ColourMult, of: NSColor.black)!;
-		PickerColour.color = CurrentColour;
+		let XShift: Int = (PickerIndex % 16) * 750;
+		let YShift: Int  = Int(floor(Float(PickerIndex) / 16)) * 750;
+		
+		PickerColour.color = (NormalPickerBitmap?.colorAt(x: PickerX + XShift, y: PickerY + YShift))!;
 	}
 	
 	func UpdatePicker() {
@@ -130,7 +147,7 @@ class ViewController: NSViewController {
 		task.launchPath = "/Applications/GIMP-2.10.app/Contents/MacOS/gimp-console"
 		task.arguments = ["-b", "(file-tiff-load 1 \"" + fullURL.path + "\" \"" + fullURL.path + "\")"];
 		task.arguments?.append("-b");
-		task.arguments?.append("(gimp-image-convert-indexed 1 2 4 0 FALSE FALSE \"" + ChosenPalette + "\")");
+		task.arguments?.append("(gimp-image-convert-indexed 1 " + String(Settings.Dither) + " 4 0 FALSE FALSE \"" + ChosenPalette + "\")");
 		task.arguments?.append("-b");
 		task.arguments?.append("(file-tiff-save 1 1 1 \"" + fullURL.path + "\" \"" + fullURL.path + "\" 2)");
 		task.arguments?.append("-b");
@@ -182,6 +199,7 @@ class ViewController: NSViewController {
 			i += 1;
 		}
 		
+		DisplayedPicker.image = PickerImageList[Int(BrightnessSlider.intValue)];
 		DisplayedPicker.image = PickerImageList[Int(BrightnessSlider.intValue)];
 	}
 	

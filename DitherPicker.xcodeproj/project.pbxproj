@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,6 +11,9 @@
 		AC09593F2AAA004300A274A1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC09593E2AAA004300A274A1 /* ViewController.swift */; };
 		AC0959412AAA004600A274A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC0959402AAA004600A274A1 /* Assets.xcassets */; };
 		AC0959442AAA004600A274A1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC0959422AAA004600A274A1 /* Main.storyboard */; };
+		AC7CEBE42AAB18E600E6FEDB /* Preferences in Frameworks */ = {isa = PBXBuildFile; productRef = AC7CEBE32AAB18E600E6FEDB /* Preferences */; };
+		AC7CEBE62AAB1CD500E6FEDB /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7CEBE52AAB1CD500E6FEDB /* SettingsViewController.swift */; };
+		AC7CEBF42AAB277E00E6FEDB /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +24,8 @@
 		AC0959432AAA004600A274A1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AC0959452AAA004600A274A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC0959462AAA004600A274A1 /* DitherPicker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DitherPicker.entitlements; sourceTree = "<group>"; };
+		AC7CEBE52AAB1CD500E6FEDB /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -28,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC7CEBE42AAB18E600E6FEDB /* Preferences in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,11 +60,13 @@
 			isa = PBXGroup;
 			children = (
 				AC09593C2AAA004300A274A1 /* AppDelegate.swift */,
+				AC7CEBE52AAB1CD500E6FEDB /* SettingsViewController.swift */,
 				AC09593E2AAA004300A274A1 /* ViewController.swift */,
 				AC0959402AAA004600A274A1 /* Assets.xcassets */,
 				AC0959422AAA004600A274A1 /* Main.storyboard */,
 				AC0959452AAA004600A274A1 /* Info.plist */,
 				AC0959462AAA004600A274A1 /* DitherPicker.entitlements */,
+				AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */,
 			);
 			path = DitherPicker;
 			sourceTree = "<group>";
@@ -79,6 +87,9 @@
 			dependencies = (
 			);
 			name = DitherPicker;
+			packageProductDependencies = (
+				AC7CEBE32AAB18E600E6FEDB /* Preferences */,
+			);
 			productName = DitherPicker;
 			productReference = AC0959392AAA004300A274A1 /* DitherPicker.app */;
 			productType = "com.apple.product-type.application";
@@ -111,6 +122,9 @@
 				Base,
 			);
 			mainGroup = AC0959302AAA004300A274A1;
+			packageReferences = (
+				AC7CEBE22AAB18E600E6FEDB /* XCRemoteSwiftPackageReference "Settings" */,
+			);
 			productRefGroup = AC09593A2AAA004300A274A1 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -125,6 +139,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC7CEBF42AAB277E00E6FEDB /* SettingsViewController.xib in Resources */,
 				AC0959412AAA004600A274A1 /* Assets.xcassets in Resources */,
 				AC0959442AAA004600A274A1 /* Main.storyboard in Resources */,
 			);
@@ -139,6 +154,7 @@
 			files = (
 				AC09593F2AAA004300A274A1 /* ViewController.swift in Sources */,
 				AC09593D2AAA004300A274A1 /* AppDelegate.swift in Sources */,
+				AC7CEBE62AAB1CD500E6FEDB /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,6 +351,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AC7CEBE22AAB18E600E6FEDB /* XCRemoteSwiftPackageReference "Settings" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Settings";
+			requirement = {
+				kind = revision;
+				revision = 139484818fe4b6b89823fa462cab686b3a419928;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AC7CEBE32AAB18E600E6FEDB /* Preferences */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC7CEBE22AAB18E600E6FEDB /* XCRemoteSwiftPackageReference "Settings" */;
+			productName = Preferences;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AC0959312AAA004300A274A1 /* Project object */;
 }
