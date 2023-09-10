@@ -70,11 +70,12 @@
                         <gridCell row="gSl-iE-cwq" column="cs9-fm-l2F" id="yFx-k0-cPt">
                             <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="T1e-xu-3pV">
                                 <rect key="frame" x="122" y="103" width="330" height="28"/>
-                                <textFieldCell key="cell" selectable="YES" title="HSV is 40.625% less accurate than other HSV colour pickers in regards to hue." placeholderString="Names obtained from https://docs.krita.org/en/reference_manual/dockers/advanced_color_selector.html#type-and-shape" id="khy-z2-g5x">
+                                <textFieldCell key="cell" selectable="YES" title="HSL is 40.625% less accurate than other HSL colour pickers in regards to hue." placeholderString="Names obtained from https://docs.krita.org/en/reference_manual/dockers/advanced_color_selector.html#type-and-shape" id="khy-z2-g5x">
                                     <font key="font" metaFont="message" size="11"/>
                                     <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <accessibility help="Names obtained from https://docs.krita.org/en/reference_manual/dockers/advanced_color_selector.html#type-and-shape"/>
                             </textField>
                         </gridCell>
                         <gridCell row="Vzg-kY-7tb" column="GGj-JC-w4E" id="UDt-xQ-CQr">

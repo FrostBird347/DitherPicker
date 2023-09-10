@@ -23,7 +23,7 @@ struct Settings {
 	//Contains the actual default values
 	static func LoadSettings() {
 		if (UserDefaults.standard.object(forKey: "Picker") == nil) {
-			UserDefaults.standard.set(0, forKey: "Picker");
+			UserDefaults.standard.set(2, forKey: "Picker");
 		}
 		if (UserDefaults.standard.object(forKey: "Dither") == nil) {
 			UserDefaults.standard.set(2, forKey: "Dither");
