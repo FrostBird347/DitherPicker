@@ -52,14 +52,14 @@
                         </gridCell>
                         <gridCell row="ukr-az-gqc" column="cs9-fm-l2F" id="jPa-TM-cRP">
                             <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="btm-I5-Iq7">
-                                <rect key="frame" x="122" y="136" width="68" height="25"/>
-                                <popUpButtonCell key="cell" type="push" title="HSI" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" refusesFirstResponder="YES" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="54o-YN-whE" id="fbD-aH-wRN">
+                                <rect key="frame" x="122" y="136" width="86" height="25"/>
+                                <popUpButtonCell key="cell" type="push" title="HSV" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" refusesFirstResponder="YES" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="54o-YN-whE" id="fbD-aH-wRN">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="JkQ-Dh-DYi">
                                         <items>
-                                            <menuItem title="HSI" state="on" id="54o-YN-whE"/>
-                                            <menuItem title="HSY’" id="aLw-QM-fex"/>
+                                            <menuItem title="HSV" state="on" id="54o-YN-whE"/>
+                                            <menuItem title="HSV Inv" id="aLw-QM-fex"/>
                                             <menuItem title="HSL" id="Kk2-km-dnt"/>
                                         </items>
                                     </menu>
@@ -70,7 +70,7 @@
                         <gridCell row="gSl-iE-cwq" column="cs9-fm-l2F" id="yFx-k0-cPt">
                             <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="T1e-xu-3pV">
                                 <rect key="frame" x="122" y="103" width="330" height="28"/>
-                                <textFieldCell key="cell" selectable="YES" title="HSL is 40.625% less accurate than other HSL colour pickers in regards to hue." placeholderString="Names obtained from https://docs.krita.org/en/reference_manual/dockers/advanced_color_selector.html#type-and-shape" id="khy-z2-g5x">
+                                <textFieldCell key="cell" selectable="YES" title="HSL is 40.625% less accurate than other HSL colour pickers in regards to hue." placeholderString="Names obtained from https://wolthera.info/wp-content/uploads/2014/07/hsx-list.png" id="khy-z2-g5x">
                                     <font key="font" metaFont="message" size="11"/>
                                     <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

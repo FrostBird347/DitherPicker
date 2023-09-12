@@ -38,16 +38,22 @@ class ViewController: NSViewController {
 		
 		switch Settings.Picker {
 			case 0:
-				PickerImage = #imageLiteral(resourceName: "PickerFull-HSI");
+				PickerImage = #imageLiteral(resourceName: "PickerFull-HSV");
+				PickerColour.isEnabled = false;
+				PickerColour.isBordered = false;
 			case 1:
-				PickerImage = #imageLiteral(resourceName: "PickerFull-HSY");
+				PickerImage = #imageLiteral(resourceName: "PickerFull-HSV-Invert");
 				BrightnessSlider.floatValue = 0;
+				PickerColour.isEnabled = false;
+				PickerColour.isBordered = false;
 			case 2:
 				PickerImage = #imageLiteral(resourceName: "PickerFull-HSL");
+				BrightnessSlider.floatValue = 145;
 			default:
 				PickerImage = NSImage(named: NSImage.cautionName)!;
 		}
 		
+		PickerIndex = Int(BrightnessSlider.intValue);
 		LoadPicker(FullPicker: PickerImage);
 		
 		let NormalPickerCG = PickerImage.cgImage(forProposedRect: nil, context: nil, hints: nil);
@@ -129,10 +135,11 @@ class ViewController: NSViewController {
 		let targetColour: NSColor = sender.color.usingColorSpace(NSColorSpace.genericRGB)!;
 		
 		switch Settings.Picker {
-			//HSI
+			//HSV
 			case 0:
+				BrightnessSlider.floatValue = Float(round((targetColour.redComponent + targetColour.greenComponent + targetColour.blueComponent) * 255 / 3));
 				NSLog("Not implemented yet!");
-			//HSY’
+			//HSV Inverted
 			case 1:
 				NSLog("Not implemented yet!");
 			//HSL
@@ -154,6 +161,10 @@ class ViewController: NSViewController {
 		}
 		//Update the picker incase something went wrong above
 		UpdateColourPreview();
+		
+		if (sender.color.redComponent != targetColour.redComponent || sender.color.greenComponent != targetColour.greenComponent || sender.color.blueComponent != targetColour.blueComponent) {
+			//PointerElement.contentTintColor
+		}
 	}
 	
 	//Calculate currently selected colour
