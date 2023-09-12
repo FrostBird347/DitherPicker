@@ -59,7 +59,7 @@ class ViewController: NSViewController {
 		// Update the view, if already loaded.
 		}
 	}
-
+	
 	@IBAction func CopyHex(_ sender: NSButton) {
 		//Colour preview should already be accurate, but just incase we should update it
 		UpdateColourPreview();
@@ -97,7 +97,7 @@ class ViewController: NSViewController {
 	}
 	
 	@IBAction func UpdatePointer(_ sender: NSPressGestureRecognizer) {
-		//When the pointer is first clicked, enable the copy button
+		//When the pointer is first set, enable the copy button
 		if (PointerElement.frame.origin.x < 0) {
 			CopyButton.isEnabled = true;
 		}
@@ -120,13 +120,49 @@ class ViewController: NSViewController {
 		}
 	}
 	
+	@IBAction func FindColour(_ sender: NSColorWell) {
+		//When the pointer is first set, enable the copy button
+		if (PointerElement.frame.origin.x < 0) {
+			CopyButton.isEnabled = true;
+		}
+		
+		let targetColour: NSColor = sender.color.usingColorSpace(NSColorSpace.genericRGB)!;
+		
+		switch Settings.Picker {
+			//HSI
+			case 0:
+				NSLog("Not implemented yet!");
+			//HSY’
+			case 1:
+				NSLog("Not implemented yet!");
+			//HSL
+			case 2:
+				//Get image tile
+				BrightnessSlider.floatValue = Float(round(targetColour.hueComponent * 255));
+				PickerIndex = Int(round(targetColour.hueComponent * 255));
+				DisplayedPicker.image = PickerImageList[PickerIndex];
+				
+				//Get picker pos
+				PickerX = Int(round(targetColour.saturationComponent * 749));
+				PickerY = Int(round(targetColour.brightnessComponent * 749));
+				PointerElement.frame.origin.x = min(max(CGFloat(PickerX), 5), 754) - 15;
+				PointerElement.frame.origin.y = min(max(CGFloat(PickerY), 5), 754) - 15;
+				PickerY = 749 - PickerY;
+				
+			default:
+				NSLog("Can't find any colours with an unknown picker!");
+		}
+		//Update the picker incase something went wrong above
+		UpdateColourPreview();
+	}
+	
 	//Calculate currently selected colour
 	func UpdateColourPreview() {
 		//Figure out where the current tile is
 		let XShift: Int = (PickerIndex % 16) * 750;
 		let YShift: Int  = Int(floor(Float(PickerIndex) / 16)) * 750;
 		
-		PickerColour.color = (NormalPickerBitmap?.colorAt(x: PickerX + XShift, y: PickerY + YShift))!;
+		PickerColour.color = (NormalPickerBitmap!.colorAt(x: PickerX + XShift, y: PickerY + YShift))!;
 	}
 	
 	//Very slow function that uses GIMP to apply a colour palette to the picker texture

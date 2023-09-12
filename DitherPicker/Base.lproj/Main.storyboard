@@ -228,23 +228,23 @@
                                 </gestureRecognizers>
                                 <imageCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="NSStatusUnavailable" id="B1k-xi-1e3"/>
                             </imageView>
-                            <slider horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="VwT-AA-Ndj" userLabel="Input_Brightness">
+                            <slider focusRingType="exterior" horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="VwT-AA-Ndj" userLabel="Input_Brightness">
                                 <rect key="frame" x="758" y="2" width="24" height="755"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="750" id="wgB-qq-KBI"/>
                                 </constraints>
-                                <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" state="on" alignment="left" maxValue="255" doubleValue="255" tickMarkPosition="left" numberOfTickMarks="255" allowsTickMarkValuesOnly="YES" sliderType="linear" id="kAc-8S-iFp">
+                                <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" state="on" focusRingType="exterior" alignment="left" maxValue="255" doubleValue="255" tickMarkPosition="left" numberOfTickMarks="255" allowsTickMarkValuesOnly="YES" sliderType="linear" id="kAc-8S-iFp">
                                     <connections>
                                         <action selector="UpdateBrightness:" target="XfG-lQ-9wD" id="raH-EJ-b9f"/>
                                     </connections>
                                 </sliderCell>
                             </slider>
-                            <textField focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3TF-2a-GHZ" userLabel="Input_Palette">
+                            <textField focusRingType="exterior" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3TF-2a-GHZ" userLabel="Input_Palette">
                                 <rect key="frame" x="5" y="761" width="721" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="wZ5-gU-S0Q"/>
                                 </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" borderStyle="border" focusRingType="none" alignment="left" placeholderString="Enter palette here" drawsBackground="YES" usesSingleLineMode="YES" id="TJs-do-EEu">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" borderStyle="border" focusRingType="exterior" alignment="left" placeholderString="Enter palette here" drawsBackground="YES" usesSingleLineMode="YES" id="TJs-do-EEu">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -269,12 +269,15 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <imageCell key="cell" continuous="YES" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="NSTouchBarColorPickerStroke" id="UOL-bg-lTn"/>
                             </imageView>
-                            <colorWell focusRingType="none" bordered="NO" continuous="NO" enabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cJ7-jb-xkY">
+                            <colorWell focusRingType="exterior" translatesAutoresizingMaskIntoConstraints="NO" id="cJ7-jb-xkY">
                                 <rect key="frame" x="731" y="760" width="23" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="23" id="KcF-bk-Fp4"/>
                                 </constraints>
                                 <color key="color" red="0.1960784314" green="0.1960784314" blue="0.1960784314" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <action selector="FindColour:" target="XfG-lQ-9wD" id="q92-hz-g4z"/>
+                                </connections>
                             </colorWell>
                         </subviews>
                         <constraints>
