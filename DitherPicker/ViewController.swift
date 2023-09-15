@@ -124,6 +124,8 @@ class ViewController: NSViewController {
 			//NSLog(PickerX.description + "," + PickerY.description);
 			UpdateColourPreview();
 		}
+		
+		PointerElement.image = #imageLiteral(resourceName: "Pointer-Normal");
 	}
 	
 	@IBAction func FindColour(_ sender: NSColorWell) {
@@ -162,8 +164,10 @@ class ViewController: NSViewController {
 		//Update the picker incase something went wrong above
 		UpdateColourPreview();
 		
-		if (sender.color.redComponent != targetColour.redComponent || sender.color.greenComponent != targetColour.greenComponent || sender.color.blueComponent != targetColour.blueComponent) {
-			//PointerElement.contentTintColor
+		if (round(sender.color.redComponent * 0xFF) != round(targetColour.redComponent * 0xFF) || round(sender.color.greenComponent * 0xFF) != round(targetColour.greenComponent * 0xFF) || round(sender.color.blueComponent * 0xFF) != round(targetColour.blueComponent * 0xFF)) {
+			PointerElement.image = #imageLiteral(resourceName: "Pointer-Imprecise");
+		} else {
+			PointerElement.image = #imageLiteral(resourceName: "Pointer-Normal");
 		}
 	}
 	
