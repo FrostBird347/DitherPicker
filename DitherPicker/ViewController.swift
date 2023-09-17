@@ -49,6 +49,14 @@ class ViewController: NSViewController {
 			case 2:
 				PickerImage = #imageLiteral(resourceName: "PickerFull-HSL");
 				BrightnessSlider.floatValue = 145;
+			case 3:
+				PickerImage = #imageLiteral(resourceName: "PickerFull-RGB");
+				PickerColour.isEnabled = false;
+				PickerColour.isBordered = false;
+			case 4:
+				PickerImage = #imageLiteral(resourceName: "PickerFull-BGR");
+				PickerColour.isEnabled = false;
+				PickerColour.isBordered = false;
 			default:
 				PickerImage = NSImage(named: NSImage.cautionName)!;
 		}

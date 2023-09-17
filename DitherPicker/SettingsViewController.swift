@@ -20,6 +20,8 @@ class SettingsViewController: NSViewController, PreferencePane {
 	@IBOutlet var ColourSelection: NSPopUpButton!
 	@IBOutlet var DitherSelection: NSPopUpButton!
 	@IBOutlet var GIMPPath: NSTextField!
+	@IBOutlet var ColourText: NSTextField!
+	
 	
 	override var nibName: NSNib.Name? { "SettingsViewController" }
 	
@@ -30,6 +32,7 @@ class SettingsViewController: NSViewController, PreferencePane {
 		ColourSelection.selectItem(at: Settings.Picker);
 		DitherSelection.selectItem(at: Settings.Dither);
 		GIMPPath.stringValue = Settings.Path;
+		UpdateColourSelectionText(nil);
 	}
 	
 	@IBAction func UpdateSettings(_ sender: NSButton) {
@@ -47,4 +50,27 @@ class SettingsViewController: NSViewController, PreferencePane {
 		NSWorkspace.shared.launchApplication(withBundleIdentifier: Bundle.main.bundleIdentifier!, options: .newInstance, additionalEventParamDescriptor: nil, launchIdentifier: nil);
 		NSApp.terminate(nil);
 	}
+	
+	@IBAction func UpdateColourSelectionText(_ sender: Any?) {
+		switch ColourSelection.indexOfSelectedItem {
+			//HSV
+			case 0:
+				ColourText.stringValue = "53% RGB Coverage"
+			//HSV-Inv
+			case 1:
+				ColourText.stringValue = "82% RGB Coverage"
+			//HSL
+			case 2:
+				ColourText.stringValue = "46% RGB Coverage"
+			//RGB
+			case 3:
+				ColourText.stringValue = "100% RGB Coverage"
+			//BGR
+			case 4:
+				ColourText.stringValue = "100% RGB Coverage"
+			default:
+				ColourText.stringValue = "--% RGB Coverage"
+		}
+	}
+	
 }

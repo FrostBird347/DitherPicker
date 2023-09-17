@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Picker.png"
+      "filename" : "PickerFull.png"
     }
   ],
   "info" : {
@@ -10,9 +10,6 @@
     "author" : "xcode"
   },
   "properties" : {
-    "compression-type" : "lossless",
-    "on-demand-resource-tags" : [
-      "PickerTexture"
-    ]
+    "compression-type" : "lossless"
   }
 }
