@@ -15,6 +15,7 @@
 		AC7CEBE42AAB18E600E6FEDB /* Preferences in Frameworks */ = {isa = PBXBuildFile; productRef = AC7CEBE32AAB18E600E6FEDB /* Preferences */; };
 		AC7CEBE62AAB1CD500E6FEDB /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7CEBE52AAB1CD500E6FEDB /* SettingsViewController.swift */; };
 		AC7CEBF42AAB277E00E6FEDB /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */; };
+		ACD9D9AD2AB8715400B9A97D /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = ACD9D9AC2AB8715400B9A97D /* Credits.rtf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		AC1F9A192AB7347200E21928 /* lzma_alone */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = lzma_alone; sourceTree = "<group>"; };
 		AC7CEBE52AAB1CD500E6FEDB /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
+		ACD9D9AC2AB8715400B9A97D /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,9 +68,10 @@
 				AC09593E2AAA004300A274A1 /* ViewController.swift */,
 				AC0959402AAA004600A274A1 /* Assets.xcassets */,
 				AC0959422AAA004600A274A1 /* Main.storyboard */,
+				AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */,
+				ACD9D9AC2AB8715400B9A97D /* Credits.rtf */,
 				AC0959452AAA004600A274A1 /* Info.plist */,
 				AC0959462AAA004600A274A1 /* DitherPicker.entitlements */,
-				AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */,
 				AC1F9A192AB7347200E21928 /* lzma_alone */,
 			);
 			path = DitherPicker;
@@ -142,6 +145,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACD9D9AD2AB8715400B9A97D /* Credits.rtf in Resources */,
 				AC1F9A1A2AB7347200E21928 /* lzma_alone in Resources */,
 				AC7CEBF42AAB277E00E6FEDB /* SettingsViewController.xib in Resources */,
 				AC0959412AAA004600A274A1 /* Assets.xcassets in Resources */,
