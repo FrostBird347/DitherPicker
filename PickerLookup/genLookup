@@ -1,0 +1,263 @@
+#!/usr/local/bin/node --max-old-space-size=16384
+//horrendously inefficient and messy script, but this only needs to be run once for each picker and then hopefully never again
+const qoi = require('qoijs');
+const fs = require('fs');
+const execFileSync = require('child_process').execFileSync;
+const deltaE = require('delta-e');
+const colour = require('c0lor');
+
+if (process.argv.length != 4) {
+	console.error("Invalid arguments!");
+	console.log("Usage:\n	genTable original_image output_json");
+	process.exit(1);
+}
+
+//load image
+console.log("Loading image...");
+let inputData;
+try {
+	inputData = qoi.decode(execFileSync("/usr/local/bin/convert", [process.argv[2], "-alpha", "on", "QOI:-"], {maxBuffer: 1000000000}));
+} catch(err) {
+	console.error(err.message);
+	process.exit(1);
+}
+
+//process image to get a list of colours
+console.log("Processing image...");
+let colourLab = colour.space.lab(colour.white.D50);
+let colourListA = {};
+let colourListB = {};
+let colourListC = {};
+let lastProgressAmount = -1;
+let lastTime = 0;
+let hitMaxSize = 0;
+for (let i = 0; i < inputData.data.length; i += 4) {
+	let currentKey = "R" + inputData.data[i] + "G" + inputData.data[i + 1] + "B" + inputData.data[i + 2];
+	
+	let progressAmount = Math.floor((i / inputData.data.length) * 100);
+	if (progressAmount != lastProgressAmount) {
+		process.stdout.write(progressAmount + "%                              \r");
+		lastProgressAmount = progressAmount;
+		lastTime = Date.now()
+	} else if (Date.now() - lastTime > 10000) {
+		process.stdout.write(((i / inputData.data.length) * 100) + "%                 \r");
+	}
+	
+	if (colourListA[currentKey] == undefined && colourListB[currentKey] == undefined && colourListC[currentKey] == undefined) {
+		//for some reason, once an object gets over a certain size it seems to suddenly halt for over as second each time a property is assigned
+		//switching to a second object should be a good enough fallback though
+		if (hitMaxSize == 2) {
+			colourListC[currentKey] = colourLab.Lab(colour.space.rgb.sRGB.XYZ(colour.RGB(inputData.data[i], inputData.data[i + 1], inputData.data[i + 2]).rgb()));
+			colourListC[currentKey].A = colourListC[currentKey].a;
+			colourListC[currentKey].B = colourListC[currentKey].b;
+			
+			colourListC[currentKey].posX = ((i / inputData.channels) % inputData.width);
+			colourListC[currentKey].posY = Math.floor((i / inputData.channels) / inputData.width);
+		} else if (hitMaxSize == 1) {
+			let preCalc = Date.now();
+			colourListB[currentKey] = colourLab.Lab(colour.space.rgb.sRGB.XYZ(colour.RGB(inputData.data[i], inputData.data[i + 1], inputData.data[i + 2]).rgb()));
+			colourListB[currentKey].A = colourListB[currentKey].a;
+			colourListB[currentKey].B = colourListB[currentKey].b;
+			
+			colourListB[currentKey].posX = ((i / inputData.channels) % inputData.width);
+			colourListB[currentKey].posY = Math.floor((i / inputData.channels) / inputData.width);
+			
+			if (Date.now() - preCalc > 5000) {
+				hitMaxSize = 2;
+				console.log("colourListB performance severely degrading, switching to colourListC!");
+			}
+		} else if (hitMaxSize == 0) {
+			let preCalc = Date.now();
+			colourListA[currentKey] = colourLab.Lab(colour.space.rgb.sRGB.XYZ(colour.RGB(inputData.data[i], inputData.data[i + 1], inputData.data[i + 2]).rgb()));
+			colourListA[currentKey].A = colourListA[currentKey].a;
+			colourListA[currentKey].B = colourListA[currentKey].b;
+			
+			colourListA[currentKey].posX = ((i / inputData.channels) % inputData.width);
+			colourListA[currentKey].posY = Math.floor((i / inputData.channels) / inputData.width);
+			
+			if (Date.now() - preCalc > 5000) {
+				hitMaxSize = 1;
+				console.log("colourListA performance severely degrading, switching to colourListB!");
+			}
+		} else {
+			console.error("unknown hitMaxSize " + hitMaxSize);
+			process.exit(1);
+		}
+	}
+}
+process.stdout.write("100%                    \r");
+let colourKeys = Object.keys(colourListA).concat(Object.keys(colourListB)).concat(Object.keys(colourListC));
+console.log(Math.round((colourKeys.length / (256*256*256) * 100)) + "% of the RGB range present.");
+
+//generate lookup array
+console.log("Generating lookup array...");
+let lookupTable = [];
+lastTime = 0;
+for (let iR = 0; iR < 256; iR++) {
+	for (let iG = 0; iG < 256; iG++) {
+		for (let iB = 0; iB < 256; iB++) {
+			
+			let targetColour = undefined;
+			let closestColourPos = [-1, -1];
+			let closestColourDist = 1000;
+			let currentKey = "R" + iR + "G" + iG + "B" + iB;
+			let searchMode = -1;
+			
+			//check if an exact match exists
+			let exactColour = colourListA[currentKey];
+			if (exactColour == undefined) {
+				exactColour = colourListB[currentKey]
+			}
+			if (exactColour == undefined) {
+				exactColour = colourListC[currentKey]
+			}
+			
+			if (exactColour != undefined) {
+				searchMode = 0;
+				closestColourPos = [exactColour.posX, exactColour.posY];
+				closestColourDist = 0;
+			} else {
+				searchMode = 1;
+				targetColour = colourLab.Lab(colour.space.rgb.sRGB.XYZ(colour.RGB(iR, iG, iB).rgb()));
+				targetColour.A = targetColour.a;
+				targetColour.B = targetColour.b;
+				
+				//if that fails, check nearby colours for a match (5^3 values checked instead of 256^3 values being checked)
+				for (let iRShift = -2; iRShift <= 2; iRShift++) {
+					for (let iGShift = -2; iGShift <= 2; iGShift++) {
+						for (let iBShift = -2; iBShift <= 2; iBShift++) {
+							let currentShiftedKey = "R" + (iR + iRShift) + "G" + (iG + iGShift) +"B" + (iB + iBShift);
+							let currentColour = colourListA[currentShiftedKey];
+							if (currentColour == undefined) {
+								currentColour = colourListB[currentShiftedKey];
+							}
+							if (currentColour == undefined) {
+								currentColour = colourListC[currentShiftedKey];
+							}
+							
+							if (currentColour != undefined) {
+								let currentDist = deltaE.getDeltaE00(targetColour, currentColour);
+								
+								if (currentDist < closestColourDist) {
+									closestColourPos = [currentColour.posX, currentColour.posY];
+									closestColourDist = currentDist;
+								}
+							}
+						}
+					}
+				}
+				
+				//if that also fails, run the same code again, but with a larger search area
+				if (closestColourDist == 1000) {
+					searchMode = 2;
+					for (let iRShift = -5; iRShift <= 5; iRShift++) {
+						if (iRShift == -2) {
+							iRShift = 3;
+						}
+						for (let iGShift = -5; iGShift <= 5; iGShift++) {
+							if (iGShift == -2) {
+								iGShift = 3;
+							}
+							for (let iBShift = -5; iBShift <= 5; iBShift++) {
+								if (iBShift == -2) {
+									iBShift = 3;
+								}
+								
+								let currentShiftedKey = "R" + (iR + iRShift) + "G" + (iG + iGShift) +"B" + (iB + iBShift);
+								let currentColour = colourListA[currentShiftedKey];
+								if (currentColour == undefined) {
+									currentColour = colourListB[currentShiftedKey];
+								}
+								if (currentColour == undefined) {
+									currentColour = colourListC[currentShiftedKey];
+								}
+								
+								if (currentColour != undefined) {
+									let currentDist = deltaE.getDeltaE00(targetColour, currentColour);
+									
+									if (currentDist < closestColourDist) {
+										closestColourPos = [currentColour.posX, currentColour.posY];
+										closestColourDist = currentDist;
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				//if that ALSO fails, run the same code again, but with an even larger search area with a slightly faster delta-e algorithm
+				if (closestColourDist == 1000) {
+					searchMode = 3;
+					for (let iRShift = -25; iRShift <= 25; iRShift++) {
+						if (iRShift == -5) {
+							iRShift = 6;
+						}
+						for (let iGShift = -25; iGShift <= 25; iGShift++) {
+							if (iGShift == -5) {
+								iGShift = 6;
+							}
+							for (let iBShift = -25; iBShift <= 25; iBShift++) {
+								if (iBShift == -5) {
+									iBShift = 6;
+								}
+								
+								let currentShiftedKey = "R" + (iR + iRShift) + "G" + (iG + iGShift) +"B" + (iB + iBShift);
+								let currentColour = colourListA[currentShiftedKey];
+								if (currentColour == undefined) {
+									currentColour = colourListB[currentShiftedKey];
+								}
+								if (currentColour == undefined) {
+									currentColour = colourListC[currentShiftedKey];
+								}
+								
+								if (currentColour != undefined) {
+									let currentDist = deltaE.getDeltaE94(targetColour, currentColour);
+									
+									if (currentDist < closestColourDist) {
+										closestColourPos = [currentColour.posX, currentColour.posY];
+										closestColourDist = currentDist;
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				//if everything above fails, find the closest match across all values, using a faster delta-e algorithm
+				if (closestColourDist == 1000) {
+					searchMode = 4;
+					for (let i = 0; i < colourKeys.length && closestColourDist != 0; i++) {
+						let currentColour = colourListA[colourKeys[i]];
+						if (currentColour == undefined) {
+							currentColour = colourListB[colourKeys[i]];
+						}
+						if (currentColour == undefined) {
+							currentColour = colourListC[colourKeys[i]];
+						}
+						
+						let currentDist = deltaE.getDeltaE76(targetColour, currentColour);
+						
+						if (currentDist < closestColourDist) {
+							closestColourPos = [currentColour.posX, currentColour.posY];
+							closestColourDist = currentDist;
+						}
+					}
+				}
+			}
+			
+			lookupTable.push(closestColourPos[0]);
+			lookupTable.push(closestColourPos[1]);
+			//lookupTable.push(Math.ceil(closestColourDist));
+			//lookupTable.push(searchMode);
+			if (Date.now() - lastTime > 500) {
+				process.stdout.write("R: " + iR + " G: " + iG + " B: " + iB + " S: " + searchMode + " D: " + closestColourDist + "                    \r");
+				lastTime = Date.now()
+			}
+		}
+	}
+}
+
+console.log("Saving to " + process.argv[3] + "...                      ");
+fs.writeFileSync(process.argv[3], JSON.stringify(lookupTable));
+console.log("Done!");
+process.exit(0);

@@ -27,6 +27,8 @@ class ViewController: NSViewController {
 	var PickerIndex: Int = 0;
 	var ChosenPalette: String = "";
 	var PickerImageList: [NSImage] = [];
+	var PickerLookup: [Int] = [];
+	var PickerLookupName: String = "error_loading_picker"
 	
 	//When the app starts:
 	// - Load settings
@@ -39,33 +41,70 @@ class ViewController: NSViewController {
 		switch Settings.Picker {
 			case 0:
 				PickerImage = #imageLiteral(resourceName: "PickerFull-HSV");
-				PickerColour.isEnabled = false;
-				PickerColour.isBordered = false;
+				PickerLookupName = "PickerLookups-HSV";
 			case 1:
 				PickerImage = #imageLiteral(resourceName: "PickerFull-HSV-Invert");
 				BrightnessSlider.floatValue = 0;
-				PickerColour.isEnabled = false;
-				PickerColour.isBordered = false;
+				PickerLookupName = "PickerLookups-HSV-Invert";
 			case 2:
 				PickerImage = #imageLiteral(resourceName: "PickerFull-HSL");
 				BrightnessSlider.floatValue = 145;
+				PickerLookupName = "PickerLookups-HSL";
 			case 3:
 				PickerImage = #imageLiteral(resourceName: "PickerFull-RGB");
-				PickerColour.isEnabled = false;
-				PickerColour.isBordered = false;
+				PickerLookupName = "PickerLookups-RGB";
 			case 4:
 				PickerImage = #imageLiteral(resourceName: "PickerFull-BGR");
+				PickerLookupName = "PickerLookups-BGR";
+			default:
 				PickerColour.isEnabled = false;
 				PickerColour.isBordered = false;
-			default:
 				PickerImage = NSImage(named: NSImage.cautionName)!;
 		}
 		
 		PickerIndex = Int(BrightnessSlider.intValue);
 		LoadPicker(FullPicker: PickerImage);
 		
-		let NormalPickerCG = PickerImage.cgImage(forProposedRect: nil, context: nil, hints: nil);
+		let NormalPickerCG = PickerImage.cgImage(forProposedRect: nil, context: nil, hints: nil)!.copy(colorSpace: CGColorSpace.init(name: CGColorSpace.genericRGBLinear)!);
 		NormalPickerBitmap = NSBitmapImageRep(cgImage: NormalPickerCG!);
+	}
+	
+	func LZMA(ShouldCompress: Bool, Input: Data) -> Data {
+		
+		NSLog("Saving LZMA input to temporary file...");
+		let directory: String = NSTemporaryDirectory();
+		let inputFile: URL = NSURL.fileURL(withPathComponents: [directory, NSUUID().uuidString + ".in"])!;
+		let outputFile: URL = NSURL.fileURL(withPathComponents: [directory, NSUUID().uuidString + ".out"])!;
+		try! Input.write(to: inputFile);
+		
+		var execMode = "d";
+		if (ShouldCompress) {
+			execMode = "e";
+		}
+		
+		let task: Process = Process();
+		let pipe: Pipe = Pipe();
+		task.standardOutput = pipe;
+		task.standardError = pipe;
+		task.standardInput = nil;
+		task.launchPath = Bundle.main.url(forResource: "lzma_alone", withExtension: "")!.path;
+		
+		task.arguments = [execMode, inputFile.path, outputFile.path];
+		
+		NSLog("Running LZMA...");
+		task.launch();
+		NSLog("Output below:\n" + String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)!);
+		NSLog("Reading data...");
+		let output: Data = try! Data(contentsOf: outputFile);
+		
+		NSLog("Removing temporary files...");
+		do {
+			let fileManager = FileManager.init();
+			try fileManager.removeItem(at: inputFile);
+			try fileManager.removeItem(at: outputFile);
+		} catch {}
+		
+		return output;
 	}
 
 	override var representedObject: Any? {
@@ -137,14 +176,65 @@ class ViewController: NSViewController {
 	}
 	
 	@IBAction func FindColour(_ sender: NSColorWell) {
+		//Can't be run inside viewDidLoad for some reason.
+		if (PickerLookup.isEmpty) {
+			//Load current picker's lookup table
+			NSLog("RGB lookup array hasn't been loaded yet!")
+			let PickerLookupRaw: Data = LZMA(ShouldCompress: false, Input: NSDataAsset(name: PickerLookupName)!.data);
+			NSLog("Processing raw data...");
+			var PickerLookupRawString: String = String(data: PickerLookupRaw, encoding: .utf8)!;
+			PickerLookupRawString.removeFirst();
+			PickerLookupRawString.removeLast();
+			let PickerLookupRawStrings: [String] = PickerLookupRawString.components(separatedBy: ",");
+			NSLog("Converting to an int array...");
+			var iPL: Int = 0;
+			var iPLPercent: Int = -20;
+			let iPLMax: Int = PickerLookupRawStrings.count;
+			while (iPL < iPLMax) {
+				if (iPL % Int(floor(Float(iPLMax) / Float(5))) == 0) {
+					iPLPercent += 20;
+					NSLog(String(iPLPercent) + "%% complete");
+				}
+				
+				PickerLookup.append(Int(PickerLookupRawStrings[iPL])!);
+				iPL += 1;
+			}
+			NSLog("Done!");
+		}
+		
 		//When the pointer is first set, enable the copy button
 		if (PointerElement.frame.origin.x < 0) {
 			CopyButton.isEnabled = true;
 		}
 		
-		let targetColour: NSColor = sender.color.usingColorSpace(NSColorSpace.genericRGB)!;
+		var TargetColour: NSColor = sender.color;
+		if (TargetColour.colorSpace.colorSpaceModel != NSColorSpace.Model.rgb) {
+			TargetColour = TargetColour.usingColorSpace(NSColorSpace.genericRGB)!;
+		}
 		
-		switch Settings.Picker {
+		let TargetColourR: Int = Int(round(TargetColour.redComponent * 0xFF));
+		let TargetColourG: Int = Int(round(TargetColour.greenComponent * 0xFF));
+		let TargetColourB: Int = Int(round(TargetColour.blueComponent * 0xFF));
+		
+		let LookupIndex: Int = 2 * ( (TargetColourR * 256 * 256) + (TargetColourG * 256) + TargetColourB );
+		let TargetX: Int = PickerLookup[LookupIndex];
+		let TargetY: Int = PickerLookup[LookupIndex + 1];
+		
+		//Get slider level
+		let SliderPos: Int = Int( floor(Float(TargetX) / 750) + ( floor(Float(TargetY) / 750) * 16 ) );
+		BrightnessSlider.floatValue = Float(SliderPos);
+		PickerIndex = SliderPos;
+		DisplayedPicker.image = PickerImageList[PickerIndex];
+		
+		//Get pointer pos
+		PickerX = TargetX % 750;
+		PickerY = TargetY % 750;
+		PickerY = 749 - PickerY;
+		PointerElement.frame.origin.x = min(max(CGFloat(PickerX), 5), 754) - 15;
+		PointerElement.frame.origin.y = min(max(CGFloat(PickerY), 5), 754) - 15;
+		PickerY = 749 - PickerY;
+		
+		/*switch Settings.Picker {
 			//HSV
 			case 0:
 				BrightnessSlider.floatValue = Float(round((targetColour.redComponent + targetColour.greenComponent + targetColour.blueComponent) * 255 / 3));
@@ -168,15 +258,20 @@ class ViewController: NSViewController {
 				
 			default:
 				NSLog("Can't find any colours with an unknown picker!");
-		}
+		}*/
 		//Update the picker incase something went wrong above
 		UpdateColourPreview();
 		
-		if (round(sender.color.redComponent * 0xFF) != round(targetColour.redComponent * 0xFF) || round(sender.color.greenComponent * 0xFF) != round(targetColour.greenComponent * 0xFF) || round(sender.color.blueComponent * 0xFF) != round(targetColour.blueComponent * 0xFF)) {
+		if (round(sender.color.redComponent * 0xFF) != round(TargetColour.redComponent * 0xFF) || round(sender.color.greenComponent * 0xFF) != round(TargetColour.greenComponent * 0xFF) || round(sender.color.blueComponent * 0xFF) != round(TargetColour.blueComponent * 0xFF)) {
 			PointerElement.image = #imageLiteral(resourceName: "Pointer-Imprecise");
 		} else {
 			PointerElement.image = #imageLiteral(resourceName: "Pointer-Normal");
 		}
+		
+		NSLog("----");
+		NSLog(String(Float(sender.color.redComponent * 0xFF)) + ":" + String(Float(TargetColour.redComponent * 0xFF)));
+		NSLog(String(Float(sender.color.greenComponent * 0xFF)) + ":" + String(Float(TargetColour.greenComponent * 0xFF)));
+		NSLog(String(Float(sender.color.blueComponent * 0xFF)) + ":" + String(Float(TargetColour.blueComponent * 0xFF)));
 	}
 	
 	//Calculate currently selected colour
@@ -185,7 +280,16 @@ class ViewController: NSViewController {
 		let XShift: Int = (PickerIndex % 16) * 750;
 		let YShift: Int  = Int(floor(Float(PickerIndex) / 16)) * 750;
 		
-		PickerColour.color = (NormalPickerBitmap!.colorAt(x: PickerX + XShift, y: PickerY + YShift))!;
+		let TempC: NSColor = NormalPickerBitmap!.colorAt(x: PickerX + XShift, y: PickerY + YShift)!;
+		let TempCConv = TempC.usingColorSpace(NSColorSpace.genericRGB)!;
+		
+		NSLog("--")
+		NSLog(String(Int(PickerX + XShift)) + "-" + String(Int(PickerY + YShift)))
+		NSLog(String(Float(TempC.redComponent * 0xFF)) + "|" + String(Float(TempCConv.redComponent * 0xFF)))
+		NSLog(String(Float(TempC.greenComponent * 0xFF)) + "|" + String(Float(TempCConv.greenComponent * 0xFF)))
+		NSLog(String(Float(TempC.blueComponent * 0xFF)) + "|" + String(Float(TempCConv.blueComponent * 0xFF)))
+		
+		PickerColour.color = TempCConv;
 	}
 	
 	//Very slow function that uses GIMP to apply a colour palette to the picker texture
