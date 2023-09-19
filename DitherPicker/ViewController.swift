@@ -6,29 +6,30 @@
 //  Copyright © 2023 FrostBird347. All rights reserved.
 //
 
-import Cocoa
+import Cocoa;
 
 class ViewController: NSViewController {
 	
-	@IBOutlet var PointerElement: NSImageView!
-	@IBOutlet var MainView: NSView!
-	@IBOutlet var CopyButton: NSButton!
-	@IBOutlet var PaletteInput: NSTextField!
-	@IBOutlet var PickerColour: NSColorWell!
-	@IBOutlet var DisplayedPicker: NSImageView!
-	@IBOutlet var BrightnessSlider: NSSlider!
+	@IBOutlet var PointerElement: NSImageView!;
+	@IBOutlet var MainView: NSView!;
+	@IBOutlet var CopyButton: NSButton!;
+	@IBOutlet var PaletteInput: NSTextField!;
+	@IBOutlet var PickerColour: NSColorWell!;
+	@IBOutlet var DisplayedPicker: NSImageView!;
+	@IBOutlet var BrightnessSlider: NSSlider!;
 	
 	var PickerX: Int = 0;
 	var PickerY: Int = 749;
 	var PickerImage: NSImage = NSImage(named: NSImage.statusUnavailableName)!;
 	var PickerBitmap: NSBitmapImageRep? = nil;
-	var NormalPickerBitmap: NSBitmapImageRep? = nil;
+	var NormalPickerRaw: Data = Data();
+	var NormalPickerQOI: Data = Data();
 	var CurrentColour: NSColor = NSColor.clear;
 	var PickerIndex: Int = 0;
 	var ChosenPalette: String = "";
 	var PickerImageList: [NSImage] = [];
 	var PickerLookup: [Int] = [];
-	var PickerLookupName: String = "error_loading_picker"
+	let PickerNames: [String] = ["HSV", "HSV-Invert", "HSL", "RGB", "BGR"];
 	
 	//When the app starts:
 	// - Load settings
@@ -38,73 +39,35 @@ class ViewController: NSViewController {
 		
 		Settings.LoadSettings();
 		
+		//load image from raw rgb data because xcode seems to re-encode the image to not only take up a ton of space, but it also modifies the pixel values of the image, causing inconsistencies with the colour picker.
+		NSLog("Extracting raw rgb data...");
+		NormalPickerRaw = LZMA(ShouldCompress: false, Input: NSDataAsset(name: "PickerFull-" + PickerNames[Settings.Picker])!.data);
+		
+		NSLog("Converting to NSImage...");
+		let NormalPickerCI: CIImage = CIImage.init(bitmapData: NormalPickerRaw, bytesPerRow: 12000 * 4, size: CGSize.init(width: 12000, height: 12000), format: CIFormat.RGBA8, colorSpace: CGColorSpace.init(name: CGColorSpace.genericRGBLinear));
+		let NormalPickerCG: CGImage = CIContext(options: nil).createCGImage(NormalPickerCI, from: NormalPickerCI.extent)!;
+		PickerImage = NSImage(cgImage: NormalPickerCG, size: .zero);
+		
 		switch Settings.Picker {
 			case 0:
-				PickerImage = #imageLiteral(resourceName: "PickerFull-HSV");
-				PickerLookupName = "PickerLookups-HSV";
+				BrightnessSlider.floatValue = 255;
 			case 1:
-				PickerImage = #imageLiteral(resourceName: "PickerFull-HSV-Invert");
 				BrightnessSlider.floatValue = 0;
-				PickerLookupName = "PickerLookups-HSV-Invert";
 			case 2:
-				PickerImage = #imageLiteral(resourceName: "PickerFull-HSL");
 				BrightnessSlider.floatValue = 145;
-				PickerLookupName = "PickerLookups-HSL";
 			case 3:
-				PickerImage = #imageLiteral(resourceName: "PickerFull-RGB");
-				PickerLookupName = "PickerLookups-RGB";
+				BrightnessSlider.floatValue = 255;
 			case 4:
-				PickerImage = #imageLiteral(resourceName: "PickerFull-BGR");
-				PickerLookupName = "PickerLookups-BGR";
+				BrightnessSlider.floatValue = 0;
 			default:
 				PickerColour.isEnabled = false;
 				PickerColour.isBordered = false;
 				PickerImage = NSImage(named: NSImage.cautionName)!;
 		}
-		
 		PickerIndex = Int(BrightnessSlider.intValue);
+		
+		NSLog("Loading picker image...");
 		LoadPicker(FullPicker: PickerImage);
-		
-		let NormalPickerCG = PickerImage.cgImage(forProposedRect: nil, context: nil, hints: nil)!.copy(colorSpace: CGColorSpace.init(name: CGColorSpace.genericRGBLinear)!);
-		NormalPickerBitmap = NSBitmapImageRep(cgImage: NormalPickerCG!);
-	}
-	
-	func LZMA(ShouldCompress: Bool, Input: Data) -> Data {
-		
-		NSLog("Saving LZMA input to temporary file...");
-		let directory: String = NSTemporaryDirectory();
-		let inputFile: URL = NSURL.fileURL(withPathComponents: [directory, NSUUID().uuidString + ".in"])!;
-		let outputFile: URL = NSURL.fileURL(withPathComponents: [directory, NSUUID().uuidString + ".out"])!;
-		try! Input.write(to: inputFile);
-		
-		var execMode = "d";
-		if (ShouldCompress) {
-			execMode = "e";
-		}
-		
-		let task: Process = Process();
-		let pipe: Pipe = Pipe();
-		task.standardOutput = pipe;
-		task.standardError = pipe;
-		task.standardInput = nil;
-		task.launchPath = Bundle.main.url(forResource: "lzma_alone", withExtension: "")!.path;
-		
-		task.arguments = [execMode, inputFile.path, outputFile.path];
-		
-		NSLog("Running LZMA...");
-		task.launch();
-		NSLog("Output below:\n" + String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)!);
-		NSLog("Reading data...");
-		let output: Data = try! Data(contentsOf: outputFile);
-		
-		NSLog("Removing temporary files...");
-		do {
-			let fileManager = FileManager.init();
-			try fileManager.removeItem(at: inputFile);
-			try fileManager.removeItem(at: outputFile);
-		} catch {}
-		
-		return output;
 	}
 
 	override var representedObject: Any? {
@@ -176,11 +139,11 @@ class ViewController: NSViewController {
 	}
 	
 	@IBAction func FindColour(_ sender: NSColorWell) {
-		//Can't be run inside viewDidLoad for some reason.
+		//Don't run at startup, because it freezes the program for quite a while
 		if (PickerLookup.isEmpty) {
 			//Load current picker's lookup table
-			NSLog("RGB lookup array hasn't been loaded yet!")
-			let PickerLookupRaw: Data = LZMA(ShouldCompress: false, Input: NSDataAsset(name: PickerLookupName)!.data);
+			NSLog("RGB lookup array hasn't been loaded yet!");
+			let PickerLookupRaw: Data = LZMA(ShouldCompress: false, Input: NSDataAsset(name: "PickerLookup-" + PickerNames[Settings.Picker])!.data);
 			NSLog("Processing raw data...");
 			var PickerLookupRawString: String = String(data: PickerLookupRaw, encoding: .utf8)!;
 			PickerLookupRawString.removeFirst();
@@ -234,31 +197,6 @@ class ViewController: NSViewController {
 		PointerElement.frame.origin.y = min(max(CGFloat(PickerY), 5), 754) - 15;
 		PickerY = 749 - PickerY;
 		
-		/*switch Settings.Picker {
-			//HSV
-			case 0:
-				BrightnessSlider.floatValue = Float(round((targetColour.redComponent + targetColour.greenComponent + targetColour.blueComponent) * 255 / 3));
-				NSLog("Not implemented yet!");
-			//HSV Inverted
-			case 1:
-				NSLog("Not implemented yet!");
-			//HSL
-			case 2:
-				//Get image tile
-				BrightnessSlider.floatValue = Float(round(targetColour.hueComponent * 255));
-				PickerIndex = Int(round(targetColour.hueComponent * 255));
-				DisplayedPicker.image = PickerImageList[PickerIndex];
-				
-				//Get picker pos
-				PickerX = Int(round(targetColour.saturationComponent * 749));
-				PickerY = Int(round(targetColour.brightnessComponent * 749));
-				PointerElement.frame.origin.x = min(max(CGFloat(PickerX), 5), 754) - 15;
-				PointerElement.frame.origin.y = min(max(CGFloat(PickerY), 5), 754) - 15;
-				PickerY = 749 - PickerY;
-				
-			default:
-				NSLog("Can't find any colours with an unknown picker!");
-		}*/
 		//Update the picker incase something went wrong above
 		UpdateColourPreview();
 		
@@ -280,30 +218,38 @@ class ViewController: NSViewController {
 		let XShift: Int = (PickerIndex % 16) * 750;
 		let YShift: Int  = Int(floor(Float(PickerIndex) / 16)) * 750;
 		
-		let TempC: NSColor = NormalPickerBitmap!.colorAt(x: PickerX + XShift, y: PickerY + YShift)!;
+		let channelCount: Int = 4;
+		let RawIndex: Int = ( (PickerX + XShift) + (PickerY + YShift) * 12000) * channelCount;
+		let RawPixelData: [UInt8] = [NormalPickerRaw[RawIndex], NormalPickerRaw[RawIndex + 1], NormalPickerRaw[RawIndex + 2], NormalPickerRaw[RawIndex + 3]];
+		
+		let TempC: NSColor = NSColor.init(red: CGFloat(RawPixelData[0]) / 0xFF, green: CGFloat(RawPixelData[1]) / 0xFF, blue: CGFloat(RawPixelData[2]) / 0xFF, alpha: 1);
 		let TempCConv = TempC.usingColorSpace(NSColorSpace.genericRGB)!;
 		
 		NSLog("--")
-		NSLog(String(Int(PickerX + XShift)) + "-" + String(Int(PickerY + YShift)))
-		NSLog(String(Float(TempC.redComponent * 0xFF)) + "|" + String(Float(TempCConv.redComponent * 0xFF)))
-		NSLog(String(Float(TempC.greenComponent * 0xFF)) + "|" + String(Float(TempCConv.greenComponent * 0xFF)))
-		NSLog(String(Float(TempC.blueComponent * 0xFF)) + "|" + String(Float(TempCConv.blueComponent * 0xFF)))
+		NSLog(String(Int(PickerX + XShift)) + "-" + String(Int(PickerY + YShift)));
+		NSLog(String(Float(TempC.redComponent * 0xFF)) + "|" + String(Float(TempCConv.redComponent * 0xFF)));
+		NSLog(String(Float(TempC.greenComponent * 0xFF)) + "|" + String(Float(TempCConv.greenComponent * 0xFF)));
+		NSLog(String(Float(TempC.blueComponent * 0xFF)) + "|" + String(Float(TempCConv.blueComponent * 0xFF)));
 		
 		PickerColour.color = TempCConv;
 	}
 	
 	//Very slow function that uses GIMP to apply a colour palette to the picker texture
 	func UpdatePicker() {
+		
+		if (NormalPickerQOI.isEmpty) {
+			NSLog("Converting raw rgba data to qoi...");
+			NormalPickerQOI = RawPickerToQOI(Input: NormalPickerRaw);
+		}
+		
 		NSLog("Saving normal picker texture to temporary location...");
 		
-		let PickerRaw: Data = (NormalPickerBitmap!.tiffRepresentation)!;
-		
 		let directory: String = NSTemporaryDirectory();
-		let fileName: String = NSUUID().uuidString + ".tiff";
+		let fileName: String = NSUUID().uuidString + ".qoi";
 		let fullURL: URL = NSURL.fileURL(withPathComponents: [directory, fileName])!;
 		
 		do {
-			try PickerRaw.write(to: fullURL);
+			try NormalPickerQOI.write(to: fullURL);
 		} catch {}
 		
 		//The texture is 12000x12000 and gimp is slow to load and save files
@@ -316,8 +262,8 @@ class ViewController: NSViewController {
 		task.standardOutput = pipe;
 		task.standardError = pipe;
 		task.standardInput = nil;
-		task.launchPath = "/Applications/GIMP-2.10.app/Contents/MacOS/gimp-console"
-		task.arguments = ["-b", "(file-tiff-load 1 \"" + fullURL.path + "\" \"" + fullURL.path + "\")"];
+		task.launchPath = "/Applications/GIMP-2.10.app/Contents/MacOS/gimp-console";
+		task.arguments = ["-b", "(file-qoi-load 1 \"" + fullURL.path + "\" \"" + fullURL.path + "\")"];
 		task.arguments?.append("-b");
 		task.arguments?.append("(gimp-image-convert-indexed 1 " + String(Settings.Dither) + " 4 0 FALSE FALSE \"" + ChosenPalette + "\")");
 		task.arguments?.append("-b");
@@ -329,7 +275,7 @@ class ViewController: NSViewController {
 		task.launch()
 		
 		let data = pipe.fileHandleForReading.readDataToEndOfFile();
-		let output = String(data: data, encoding: .utf8)!
+		let output = String(data: data, encoding: .utf8)!;
 		
 		NSLog("Applied palette, output below:\n" + output);
 		NSLog("Loading new texture...");

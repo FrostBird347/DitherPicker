@@ -14,9 +14,9 @@
             filePath = "DitherPicker/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "235"
-            endingLineNumber = "235"
-            landmarkName = "FindColour(_:)"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "UpdatePicker()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

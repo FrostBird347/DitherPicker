@@ -9,6 +9,15 @@
           "revision": "139484818fe4b6b89823fa462cab686b3a419928",
           "version": null
         }
+      },
+      {
+        "package": "SwiftQOI",
+        "repositoryURL": "https://github.com/FrostBird347/Swift-QOI",
+        "state": {
+          "branch": null,
+          "revision": "217e4654d2661b0ae3ddd2aa51d6544ad22f3984",
+          "version": null
+        }
       }
     ]
   },

@@ -12,10 +12,12 @@
 		AC0959412AAA004600A274A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC0959402AAA004600A274A1 /* Assets.xcassets */; };
 		AC0959442AAA004600A274A1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC0959422AAA004600A274A1 /* Main.storyboard */; };
 		AC1F9A1A2AB7347200E21928 /* lzma_alone in Resources */ = {isa = PBXBuildFile; fileRef = AC1F9A192AB7347200E21928 /* lzma_alone */; };
+		AC43C58E2AB9D14D005A9A5C /* SwiftQOI in Frameworks */ = {isa = PBXBuildFile; productRef = AC43C58D2AB9D14D005A9A5C /* SwiftQOI */; };
 		AC7CEBE42AAB18E600E6FEDB /* Preferences in Frameworks */ = {isa = PBXBuildFile; productRef = AC7CEBE32AAB18E600E6FEDB /* Preferences */; };
 		AC7CEBE62AAB1CD500E6FEDB /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7CEBE52AAB1CD500E6FEDB /* SettingsViewController.swift */; };
 		AC7CEBF42AAB277E00E6FEDB /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */; };
 		ACD9D9AD2AB8715400B9A97D /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = ACD9D9AC2AB8715400B9A97D /* Credits.rtf */; };
+		ACD9D9AF2AB9922B00B9A97D /* Public.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD9D9AE2AB9922B00B9A97D /* Public.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,7 @@
 		AC7CEBE52AAB1CD500E6FEDB /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
 		ACD9D9AC2AB8715400B9A97D /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		ACD9D9AE2AB9922B00B9A97D /* Public.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Public.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC43C58E2AB9D14D005A9A5C /* SwiftQOI in Frameworks */,
 				AC7CEBE42AAB18E600E6FEDB /* Preferences in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -66,6 +70,7 @@
 				AC09593C2AAA004300A274A1 /* AppDelegate.swift */,
 				AC7CEBE52AAB1CD500E6FEDB /* SettingsViewController.swift */,
 				AC09593E2AAA004300A274A1 /* ViewController.swift */,
+				ACD9D9AE2AB9922B00B9A97D /* Public.swift */,
 				AC0959402AAA004600A274A1 /* Assets.xcassets */,
 				AC0959422AAA004600A274A1 /* Main.storyboard */,
 				AC7CEBF32AAB277E00E6FEDB /* SettingsViewController.xib */,
@@ -95,6 +100,7 @@
 			name = DitherPicker;
 			packageProductDependencies = (
 				AC7CEBE32AAB18E600E6FEDB /* Preferences */,
+				AC43C58D2AB9D14D005A9A5C /* SwiftQOI */,
 			);
 			productName = DitherPicker;
 			productReference = AC0959392AAA004300A274A1 /* DitherPicker.app */;
@@ -130,6 +136,7 @@
 			mainGroup = AC0959302AAA004300A274A1;
 			packageReferences = (
 				AC7CEBE22AAB18E600E6FEDB /* XCRemoteSwiftPackageReference "Settings" */,
+				AC43C58C2AB9D14D005A9A5C /* XCRemoteSwiftPackageReference "Swift-QOI" */,
 			);
 			productRefGroup = AC09593A2AAA004300A274A1 /* Products */;
 			projectDirPath = "";
@@ -161,6 +168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC09593F2AAA004300A274A1 /* ViewController.swift in Sources */,
+				ACD9D9AF2AB9922B00B9A97D /* Public.swift in Sources */,
 				AC09593D2AAA004300A274A1 /* AppDelegate.swift in Sources */,
 				AC7CEBE62AAB1CD500E6FEDB /* SettingsViewController.swift in Sources */,
 			);
@@ -363,6 +371,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		AC43C58C2AB9D14D005A9A5C /* XCRemoteSwiftPackageReference "Swift-QOI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/FrostBird347/Swift-QOI";
+			requirement = {
+				kind = revision;
+				revision = 217e4654d2661b0ae3ddd2aa51d6544ad22f3984;
+			};
+		};
 		AC7CEBE22AAB18E600E6FEDB /* XCRemoteSwiftPackageReference "Settings" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Settings";
@@ -374,6 +390,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AC43C58D2AB9D14D005A9A5C /* SwiftQOI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC43C58C2AB9D14D005A9A5C /* XCRemoteSwiftPackageReference "Swift-QOI" */;
+			productName = SwiftQOI;
+		};
 		AC7CEBE32AAB18E600E6FEDB /* Preferences */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AC7CEBE22AAB18E600E6FEDB /* XCRemoteSwiftPackageReference "Settings" */;

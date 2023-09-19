@@ -6,8 +6,8 @@
 //  Copyright © 2023 FrostBird347. All rights reserved.
 //
 
-import Cocoa
-import Preferences
+import Cocoa;
+import Preferences;
 
 extension PreferencePane.Identifier {
 	static let Palette = Identifier("Palette")
@@ -35,6 +35,12 @@ struct Settings {
 		Settings.Picker = UserDefaults.standard.integer(forKey: "Picker");
 		Settings.Dither = UserDefaults.standard.integer(forKey: "Dither");
 		Settings.Path = UserDefaults.standard.string(forKey: "GIMPPath")!;
+		
+		if (Settings.Picker < 0 || Settings.Picker > 4) {
+			NSLog("Unknown picker value set!");
+			UserDefaults.standard.removeObject(forKey: "Picker");
+			NSLog("Reset the saved picker option, however the program will still attempt to run with the invalid picker once (and likely crash).");
+		}
 	}
 }
 
@@ -49,7 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	@IBAction
 	func preferencesMenuItemActionHandler(_ sender: NSMenuItem) {
-		preferencesWindowController.show()
+		preferencesWindowController.show();
 	}
 
 	func applicationDidFinishLaunching(_ aNotification: Notification) {

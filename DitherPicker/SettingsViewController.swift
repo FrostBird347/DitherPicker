@@ -6,27 +6,27 @@
 //  Copyright © 2023 FrostBird347. All rights reserved.
 //
 
-import Cocoa
-import Preferences
+import Cocoa;
+import Preferences;
 
 //I wouldn't be surprised if there was an actual api for loading and reading values
 //I didn't try to wrap my head around how the example settings panel works in this regard
 //Instead I just added a button to save the settings and relaunch the app
 class SettingsViewController: NSViewController, PreferencePane {
-	let preferencePaneIdentifier = PreferencePane.Identifier.Palette
-	let preferencePaneTitle = "General"
-	let toolbarItemIcon = NSImage(named: NSImage.colorPanelName)!
+	let preferencePaneIdentifier = PreferencePane.Identifier.Palette;
+	let preferencePaneTitle = "General";
+	let toolbarItemIcon = NSImage(named: NSImage.colorPanelName)!;
 	
-	@IBOutlet var ColourSelection: NSPopUpButton!
-	@IBOutlet var DitherSelection: NSPopUpButton!
-	@IBOutlet var GIMPPath: NSTextField!
-	@IBOutlet var ColourText: NSTextField!
+	@IBOutlet var ColourSelection: NSPopUpButton!;
+	@IBOutlet var DitherSelection: NSPopUpButton!;
+	@IBOutlet var GIMPPath: NSTextField!;
+	@IBOutlet var ColourText: NSTextField!;
 	
 	
 	override var nibName: NSNib.Name? { "SettingsViewController" }
 	
 	override func viewDidLoad() {
-		super.viewDidLoad()
+		super.viewDidLoad();
 		
 		// Setup stuff here
 		ColourSelection.selectItem(at: Settings.Picker);
@@ -55,21 +55,21 @@ class SettingsViewController: NSViewController, PreferencePane {
 		switch ColourSelection.indexOfSelectedItem {
 			//HSV
 			case 0:
-				ColourText.stringValue = "53% RGB Coverage"
+				ColourText.stringValue = "53% RGB Coverage";
 			//HSV-Inv
 			case 1:
-				ColourText.stringValue = "82% RGB Coverage"
+				ColourText.stringValue = "82% RGB Coverage";
 			//HSL
 			case 2:
-				ColourText.stringValue = "46% RGB Coverage"
+				ColourText.stringValue = "46% RGB Coverage";
 			//RGB
 			case 3:
-				ColourText.stringValue = "100% RGB Coverage"
+				ColourText.stringValue = "100% RGB Coverage";
 			//BGR
 			case 4:
-				ColourText.stringValue = "100% RGB Coverage"
+				ColourText.stringValue = "100% RGB Coverage";
 			default:
-				ColourText.stringValue = "--% RGB Coverage"
+				ColourText.stringValue = "--% RGB Coverage";
 		}
 	}
 	
