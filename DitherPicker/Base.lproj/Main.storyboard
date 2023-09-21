@@ -267,7 +267,14 @@
                             <imageView canDrawConcurrently="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hfn-Re-48F" userLabel="Image_Pointer">
                                 <rect key="frame" x="-300" y="-300" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <imageCell key="cell" continuous="YES" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="NSTouchBarColorPickerStroke" id="UOL-bg-lTn"/>
+                                <gestureRecognizers>
+                                    <pressGestureRecognizer delaysPrimaryMouseButtonEvents="YES" minimumPressDuration="0.0" id="uRc-5J-nVd">
+                                        <connections>
+                                            <action selector="UpdatePointerFallback:" target="XfG-lQ-9wD" id="MlN-Du-bYN"/>
+                                        </connections>
+                                    </pressGestureRecognizer>
+                                </gestureRecognizers>
+                                <imageCell key="cell" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="NSTouchBarColorPickerStroke" id="UOL-bg-lTn"/>
                             </imageView>
                             <colorWell focusRingType="exterior" translatesAutoresizingMaskIntoConstraints="NO" id="cJ7-jb-xkY">
                                 <rect key="frame" x="731" y="760" width="23" height="23"/>

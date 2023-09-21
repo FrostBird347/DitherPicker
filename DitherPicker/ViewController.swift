@@ -112,6 +112,11 @@ class ViewController: NSViewController {
 		}
 	}
 	
+	//Runs when the user clicks on PointerElement
+	@IBAction func UpdatePointerFallback(_ sender: NSPressGestureRecognizer) {
+		UpdatePointer(sender);
+	}
+	
 	@IBAction func UpdatePointer(_ sender: NSPressGestureRecognizer) {
 		//When the pointer is first set, enable the copy button
 		if (PointerElement.frame.origin.x < 0) {
@@ -197,19 +202,15 @@ class ViewController: NSViewController {
 		PointerElement.frame.origin.y = min(max(CGFloat(PickerY), 5), 754) - 15;
 		PickerY = 749 - PickerY;
 		
-		//Update the picker incase something went wrong above
+		//Update the picker incase the selected colour doesn't exist on the picker
 		UpdateColourPreview();
 		
+		//Make the picker show a different texture if the selected colour doesn't exist
 		if (round(sender.color.redComponent * 0xFF) != round(TargetColour.redComponent * 0xFF) || round(sender.color.greenComponent * 0xFF) != round(TargetColour.greenComponent * 0xFF) || round(sender.color.blueComponent * 0xFF) != round(TargetColour.blueComponent * 0xFF)) {
 			PointerElement.image = #imageLiteral(resourceName: "Pointer-Imprecise");
 		} else {
 			PointerElement.image = #imageLiteral(resourceName: "Pointer-Normal");
 		}
-		
-		NSLog("----");
-		NSLog(String(Float(sender.color.redComponent * 0xFF)) + ":" + String(Float(TargetColour.redComponent * 0xFF)));
-		NSLog(String(Float(sender.color.greenComponent * 0xFF)) + ":" + String(Float(TargetColour.greenComponent * 0xFF)));
-		NSLog(String(Float(sender.color.blueComponent * 0xFF)) + ":" + String(Float(TargetColour.blueComponent * 0xFF)));
 	}
 	
 	//Calculate currently selected colour
@@ -222,16 +223,7 @@ class ViewController: NSViewController {
 		let RawIndex: Int = ( (PickerX + XShift) + (PickerY + YShift) * 12000) * channelCount;
 		let RawPixelData: [UInt8] = [NormalPickerRaw[RawIndex], NormalPickerRaw[RawIndex + 1], NormalPickerRaw[RawIndex + 2], NormalPickerRaw[RawIndex + 3]];
 		
-		let TempC: NSColor = NSColor.init(red: CGFloat(RawPixelData[0]) / 0xFF, green: CGFloat(RawPixelData[1]) / 0xFF, blue: CGFloat(RawPixelData[2]) / 0xFF, alpha: 1);
-		let TempCConv = TempC.usingColorSpace(NSColorSpace.genericRGB)!;
-		
-		NSLog("--")
-		NSLog(String(Int(PickerX + XShift)) + "-" + String(Int(PickerY + YShift)));
-		NSLog(String(Float(TempC.redComponent * 0xFF)) + "|" + String(Float(TempCConv.redComponent * 0xFF)));
-		NSLog(String(Float(TempC.greenComponent * 0xFF)) + "|" + String(Float(TempCConv.greenComponent * 0xFF)));
-		NSLog(String(Float(TempC.blueComponent * 0xFF)) + "|" + String(Float(TempCConv.blueComponent * 0xFF)));
-		
-		PickerColour.color = TempCConv;
+		PickerColour.color = NSColor.init(red: CGFloat(RawPixelData[0]) / 0xFF, green: CGFloat(RawPixelData[1]) / 0xFF, blue: CGFloat(RawPixelData[2]) / 0xFF, alpha: 1);
 	}
 	
 	//Very slow function that uses GIMP to apply a colour palette to the picker texture

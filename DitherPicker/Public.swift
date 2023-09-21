@@ -9,11 +9,18 @@
 import Foundation;
 import SQOI;
 
-func _linker_fix_dont_run() {
-	let tempA = SQOI.qoi_padding;
+func _qoi_linker_fix() {
+	let testA: Any? = SQOI.qoi_padding;
+	//Should be unreachable code
+	if (testA == nil) {
+		NSLog("???")
+	}
 }
 
 func RawPickerToQOI(Input: Data) -> Data {
+	
+	_qoi_linker_fix();
+	
 	var desc = qoi_desc(width: 12000, height: 12000, channels: 4, colorspace: 0);
 	var size = Int32(Input.count);
 	
