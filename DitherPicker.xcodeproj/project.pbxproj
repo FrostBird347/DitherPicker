@@ -316,7 +316,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = FrostBird347.DitherPicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -339,7 +339,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = FrostBird347.DitherPicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -376,7 +376,7 @@
 			repositoryURL = "https://github.com/FrostBird347/Swift-QOI";
 			requirement = {
 				kind = revision;
-				revision = 240a2c7402a5ebc796b85b8b2d3f6ab2b1c0169c;
+				revision = 80ee692f8d81ea9fb2bafb69787f2374cbde3be1;
 			};
 		};
 		AC7CEBE22AAB18E600E6FEDB /* XCRemoteSwiftPackageReference "Settings" */ = {

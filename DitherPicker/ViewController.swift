@@ -39,9 +39,9 @@ class ViewController: NSViewController {
 		
 		Settings.LoadSettings();
 		
-		//load image from raw rgb data because xcode seems to re-encode the image to not only take up a ton of space, but it also modifies the pixel values of the image, causing inconsistencies with the colour picker.
-		NSLog("Extracting raw rgb data...");
-		NormalPickerRaw = LZMA(ShouldCompress: false, Input: NSDataAsset(name: "PickerFull-" + PickerNames[Settings.Picker])!.data);
+		//use raw rgb data because xcode modifies the pixel values of the image, causing inconsistencies with the colour picker.
+		NSLog("Extracting raw picker...");
+		NormalPickerRaw = QOIToRawPicker(Input: LZMA(ShouldCompress: false, Input: NSDataAsset(name: "PickerFull-" + PickerNames[Settings.Picker])!.data));
 		
 		NSLog("Converting to NSImage...");
 		let NormalPickerCI: CIImage = CIImage.init(bitmapData: NormalPickerRaw, bytesPerRow: 12000 * 4, size: CGSize.init(width: 12000, height: 12000), format: CIFormat.RGBA8, colorSpace: CGColorSpace.init(name: CGColorSpace.genericRGBLinear));
@@ -246,6 +246,7 @@ class ViewController: NSViewController {
 		
 		//The texture is 12000x12000 and gimp is slow to load and save files
 		//I won't use alternatives such as imagemagick because dither is applied differently
+		//This issue has been improved a little by using QOI instead of tiff
 		NSLog("Applying new palette to the texture... (this will take a while)");
 		
 		let task: Process = Process();
@@ -259,7 +260,7 @@ class ViewController: NSViewController {
 		task.arguments?.append("-b");
 		task.arguments?.append("(gimp-image-convert-indexed 1 " + String(Settings.Dither) + " 4 0 FALSE FALSE \"" + ChosenPalette + "\")");
 		task.arguments?.append("-b");
-		task.arguments?.append("(file-tiff-save 1 1 1 \"" + fullURL.path + "\" \"" + fullURL.path + "\" 2)");
+		task.arguments?.append("(file-qoi-save 0 1 1 \"" + fullURL.path + "\" \"" + fullURL.path + "\")");
 		task.arguments?.append("-b");
 		task.arguments?.append("(gimp-quit 1)");
 		
@@ -268,15 +269,19 @@ class ViewController: NSViewController {
 		
 		let data = pipe.fileHandleForReading.readDataToEndOfFile();
 		let output = String(data: data, encoding: .utf8)!;
-		
 		NSLog("Applied palette, output below:\n" + output);
-		NSLog("Loading new texture...");
 		
+		NSLog("Loading new texture...");
 		var ConvertedPicker: Data? = nil;
 		do {
-			ConvertedPicker = try Data(contentsOf: fullURL);
+			ConvertedPicker = QOIToRawPicker(Input: try Data(contentsOf: fullURL));
 		} catch {}
-		LoadPicker(FullPicker: NSImage(data: ConvertedPicker!)!);
+		
+		NSLog("Converting to NSImage...");
+		let NormalPickerCI: CIImage = CIImage.init(bitmapData: ConvertedPicker!, bytesPerRow: 12000 * 4, size: CGSize.init(width: 12000, height: 12000), format: CIFormat.RGBA8, colorSpace: CGColorSpace.init(name: CGColorSpace.genericRGBLinear));
+		let NormalPickerCG: CGImage = CIContext(options: nil).createCGImage(NormalPickerCI, from: NormalPickerCI.extent)!;
+		
+		LoadPicker(FullPicker: NSImage(cgImage: NormalPickerCG, size: .zero));
 		
 		NSLog("Removing temporary file...");
 		do {

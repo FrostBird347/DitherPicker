@@ -33,6 +33,21 @@ func RawPickerToQOI(Input: Data) -> Data {
 	return Data(bytes: Output!, count: Int(size));
 }
 
+func QOIToRawPicker(Input: Data) -> Data {
+	
+	_qoi_linker_fix();
+	
+	var desc = qoi_desc(width: 0, height: 0, channels: 4, colorspace: 0);
+	
+	let InputPointer = Input.withUnsafeBytes({ $0.baseAddress });
+	let Output = SQOI.qoi_decode(InputPointer, Int32(Input.count), &desc, Int32(4));
+	defer {
+		Output?.deallocate();
+	}
+	
+	return Data(bytes: Output!, count: 12000 * 12000 * 4);
+}
+
 func LZMA(ShouldCompress: Bool, Input: Data) -> Data {
 	
 	NSLog("Saving LZMA input to temporary file...");

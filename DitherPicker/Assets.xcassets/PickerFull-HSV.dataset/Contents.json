@@ -9,7 +9,7 @@
   "data" : [
     {
       "idiom" : "universal",
-      "filename" : "PickerRaw-HSV.lzma",
+      "filename" : "PickerFull.lzma",
       "universal-type-identifier" : "org.tukaani.lzma-archive"
     }
   ]
