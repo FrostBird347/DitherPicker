@@ -40,13 +40,12 @@ class ViewController: NSViewController {
 		Settings.LoadSettings();
 		
 		//use raw rgb data because xcode modifies the pixel values of the image, causing inconsistencies with the colour picker.
-		NSLog("Extracting raw picker...");
+		NSLog("Extracting raw RGB data...");
 		NormalPickerRaw = QOIToRawPicker(Input: LZMA(ShouldCompress: false, Input: NSDataAsset(name: "PickerFull-" + PickerNames[Settings.Picker])!.data));
 		
-		NSLog("Converting to NSImage...");
+		NSLog("Converting to CGImage...");
 		let NormalPickerCI: CIImage = CIImage.init(bitmapData: NormalPickerRaw, bytesPerRow: 12000 * 4, size: CGSize.init(width: 12000, height: 12000), format: CIFormat.RGBA8, colorSpace: CGColorSpace.init(name: CGColorSpace.genericRGBLinear));
 		let NormalPickerCG: CGImage = CIContext(options: nil).createCGImage(NormalPickerCI, from: NormalPickerCI.extent)!;
-		PickerImage = NSImage(cgImage: NormalPickerCG, size: .zero);
 		
 		switch Settings.Picker {
 			case 0:
@@ -67,7 +66,7 @@ class ViewController: NSViewController {
 		PickerIndex = Int(BrightnessSlider.intValue);
 		
 		NSLog("Loading picker image...");
-		LoadPicker(FullPicker: PickerImage);
+		LoadPicker(FullPicker: NormalPickerCG);
 	}
 
 	override var representedObject: Any? {
@@ -230,7 +229,7 @@ class ViewController: NSViewController {
 	func UpdatePicker() {
 		
 		if (NormalPickerQOI.isEmpty) {
-			NSLog("Converting raw rgba data to qoi...");
+			NSLog("Converting raw RGB data to qoi...");
 			NormalPickerQOI = RawPickerToQOI(Input: NormalPickerRaw);
 		}
 		
@@ -271,17 +270,16 @@ class ViewController: NSViewController {
 		let output = String(data: data, encoding: .utf8)!;
 		NSLog("Applied palette, output below:\n" + output);
 		
-		NSLog("Loading new texture...");
+		NSLog("Converting to raw RGB data...");
 		var ConvertedPicker: Data? = nil;
 		do {
 			ConvertedPicker = QOIToRawPicker(Input: try Data(contentsOf: fullURL));
 		} catch {}
 		
-		NSLog("Converting to NSImage...");
+		NSLog("Converting to CGImage...");
 		let NormalPickerCI: CIImage = CIImage.init(bitmapData: ConvertedPicker!, bytesPerRow: 12000 * 4, size: CGSize.init(width: 12000, height: 12000), format: CIFormat.RGBA8, colorSpace: CGColorSpace.init(name: CGColorSpace.genericRGBLinear));
 		let NormalPickerCG: CGImage = CIContext(options: nil).createCGImage(NormalPickerCI, from: NormalPickerCI.extent)!;
-		
-		LoadPicker(FullPicker: NSImage(cgImage: NormalPickerCG, size: .zero));
+		LoadPicker(FullPicker: NormalPickerCG);
 		
 		NSLog("Removing temporary file...");
 		do {
@@ -292,12 +290,9 @@ class ViewController: NSViewController {
 		NSLog("Done!");
 	}
 	
-	func LoadPicker(FullPicker: NSImage) {
+	func LoadPicker(FullPicker: CGImage) {
 		NSLog("Updating picker texture...");
 		PickerImageList.removeAll();
-		
-		let PickerCG = FullPicker.cgImage(forProposedRect: nil, context: nil, hints: nil);
-		PickerBitmap = NSBitmapImageRep(cgImage: PickerCG!);
 		
 		var i: Int = 0;
 		var X: Int;
@@ -310,7 +305,7 @@ class ViewController: NSViewController {
 			Y = Int(floor(Float(i) / 16));
 			
 			Rect = CGRect(x: X * 750, y: Y * 750, width: 750, height: 750);
-			CurrentPickerCG = PickerCG!.cropping(to: Rect);
+			CurrentPickerCG = FullPicker.cropping(to: Rect);
 			CurrentPicker = NSImage(cgImage: CurrentPickerCG!, size: .zero);
 			
 			PickerImageList.append(CurrentPicker!);
