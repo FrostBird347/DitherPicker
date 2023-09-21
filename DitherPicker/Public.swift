@@ -8,12 +8,9 @@
 
 import Foundation;
 import SQOI;
-import SwiftQOI;
 
 func _linker_fix_dont_run() {
 	let tempA = SQOI.qoi_padding;
-	let tempB = SQOI.qoi_write_32;
-	let tempC = SQOI.qoi_read_32;
 }
 
 func RawPickerToQOI(Input: Data) -> Data {

@@ -376,7 +376,7 @@
 			repositoryURL = "https://github.com/FrostBird347/Swift-QOI";
 			requirement = {
 				kind = revision;
-				revision = 217e4654d2661b0ae3ddd2aa51d6544ad22f3984;
+				revision = 240a2c7402a5ebc796b85b8b2d3f6ab2b1c0169c;
 			};
 		};
 		AC7CEBE22AAB18E600E6FEDB /* XCRemoteSwiftPackageReference "Settings" */ = {
