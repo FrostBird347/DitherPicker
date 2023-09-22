@@ -148,22 +148,38 @@ class ViewController: NSViewController {
 			//Load current picker's lookup table
 			NSLog("RGB lookup array hasn't been loaded yet!");
 			let PickerLookupRaw: Data = LZMA(ShouldCompress: false, Input: NSDataAsset(name: "PickerLookup-" + PickerNames[Settings.Picker])!.data);
-			NSLog("Processing raw data...");
+			NSLog("Splitting raw data...");
 			var PickerLookupRawString: String = String(data: PickerLookupRaw, encoding: .utf8)!;
 			PickerLookupRawString.removeFirst();
 			PickerLookupRawString.removeLast();
 			let PickerLookupRawStrings: [String] = PickerLookupRawString.components(separatedBy: ",");
-			NSLog("Converting to an int array...");
+			NSLog("Converting relative values to absolute and building lookup array...");
+			var LastX: Int = 0;
+			var LastY: Int = 0;
 			var iPL: Int = 0;
 			var iPLPercent: Int = -20;
-			let iPLMax: Int = PickerLookupRawStrings.count;
+			let iPLMax: Int = PickerLookupRawStrings.count / 2;
 			while (iPL < iPLMax) {
 				if (iPL % Int(floor(Float(iPLMax) / Float(5))) == 0) {
 					iPLPercent += 20;
 					NSLog(String(iPLPercent) + "%% complete");
 				}
 				
-				PickerLookup.append(Int(PickerLookupRawStrings[iPL])!);
+				var currentX: Int = (LastX + Int(PickerLookupRawStrings[iPL])!) % 12000;
+				if (currentX < 0) {
+					currentX += 12000;
+				}
+				
+				var currentY: Int = (LastY + Int(PickerLookupRawStrings[iPL + iPLMax])!) % 12000;
+				if (currentY < 0) {
+					currentY += 12000;
+				}
+				
+				PickerLookup.append(currentX);
+				PickerLookup.append(currentY);
+				
+				LastX = currentX;
+				LastY = currentY;
 				iPL += 1;
 			}
 			NSLog("Done!");
